@@ -1,14 +1,15 @@
 const OtpRepository = require('../repositories/otpRepository');
-const usuarioRepository = require('../repositories/usuarioRepository');
 const UsuarioRepository = require('../repositories/usuarioRepository');
 const AuthService = require('./authService');
+const UsuarioService = require('./usuarioService');
+const sendOtpEmail = require('./emailService');
 
 class OtpService {
     async solicitarOtp(email) {
         console.log('📧 Solicitando OTP para:', email);
         
         // Verifica se o usuário existe
-        const usuarioExistente = await usuarioRepository.getByEmail(email);
+        const usuarioExistente = await UsuarioRepository.getByEmail(email);
             if (usuarioExistente) {
             throw { 
                 status: 409, 
@@ -24,7 +25,7 @@ class OtpService {
         await OtpRepository.createOrUpdate(email, otpCode, 10);
 
         // TODO: Implementar envio de email aqui
-        // await this.enviarEmailOtp(email, otpCode);
+        await sendOtpEmail(email, otpCode);
         
         console.log('📤 OTP gerado (implementar envio de email):', otpCode);
         
@@ -35,27 +36,32 @@ class OtpService {
         };
     }
 
-    async verificarOtp(email, codigoOtp) {
-        console.log('000000000000')
-        const otpValido = await OtpRepository.findByEmail(email);
-
+    async verificarOtp(email, otp, nome, sobrenome, data_nascimento, password) {
+        
+        const otpValido = await OtpRepository.findByEmail(email, otp);
         if (!otpValido) {
             throw { status: 401, message: 'OTP inválido ou expirado' };
         }
-        // Busca o usuário no banco
-        const usuario = await UsuarioRepository.buscarPorEmail(email);
-        if (!usuario) {
-            throw { status: 404, message: 'Usuário não encontrado' };
-        }
+        
+        const novoUsuario = await UsuarioService.create({
+            nome,
+            sobrenome,
+            data_nascimento,
+            email,
+            password
+        });
+        console.log('1111111111111')
         // Gera JWT
         const token = AuthService.generateToken({
-            id: usuario.id,
-            email: usuario.email,
+            id: novoUsuario.id,
+            email: novoUsuario.email,
             authMethod: 'otp'
         }, '30m');
+
         // Remove ou invalida OTP após uso
         await OtpRepository.deleteByEmail(email);
-        return { message: 'OTP verificada com sucesso', token, usuario };
+
+        return { message: 'OTP verificada com sucesso', token, novoUsuario };
         }
     };
 

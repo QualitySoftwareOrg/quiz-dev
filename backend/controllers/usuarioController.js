@@ -92,14 +92,16 @@ class UsuarioController {
                 res.status(200).json({ message: 'OTP enviada para o seu e-mail'})
             } catch (error) {
                 res.status(400).json({ erro: error.message });
+                console.error(error)
             }
         }
     async verificarOtp(req, res) {
         try {
-            const { email, otp } = req.body;
-            const token = await OtpService.verificarOtp(email, otp);
-            return res.status(200).json({ token })
+            const {email, otp, nome, sobrenome, data_nascimento, password } = req.body;
+            const result = await OtpService.verificarOtp(email, otp, nome, sobrenome, data_nascimento, password);
+            return res.status(201).json( result )
         } catch (error) {
+            console.log(error)
             return res.status(400).json({ error: error.message})
         }
     }
@@ -114,6 +116,7 @@ class UsuarioController {
             res.status(200).json(result);
 
         } catch (error) {
+            console.log(error)
             res.status(error.status || 500).json({ message: error.message || 'Erro ao efetuar login'});
         }
     }
