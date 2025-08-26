@@ -136,7 +136,7 @@ class UsuarioRoutes {
         this.router.post('/login', controller.login)
 
         this.router.post('/solicitar-otp', controller.solicitarOtp);
-        this.router.post('/verificar-otp', controller.verificarOtp);
+        this.router.post('/verificar-otp', ValidateUsuario.validateCreate, controller.verificarOtp);
     }
 
     getRouter() {

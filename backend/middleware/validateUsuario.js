@@ -1,8 +1,8 @@
 class ValidateUsuario {
     static validateCreate (req, res, next) {
-        const { nome, sobrenome, email, password } = req.body;
+        const { nome, sobrenome, email, password, data_nascimento  } = req.body;
 
-        if (!nome || !sobrenome || !email || !password) {
+        if (!nome || !sobrenome || !email || !password || !data_nascimento) {
             return res.status(400).json({ message: "Todos os campos são obrigatórios" });
         }
 
@@ -13,6 +13,10 @@ class ValidateUsuario {
         }
         if (!regex.test(sobrenome)) {
             return res.status(400).json({ message: "O sobrenome deve conter apenas letras." });
+        }
+        if (/^\d{2}\/\d{2}\/\d{4}$/.test(data_nascimento)) {
+            const [dia, mes, ano] = data_nascimento.split('/');
+            req.body.data_nascimento = `${ano}-${mes}-${dia}`;
         }
         
         next();

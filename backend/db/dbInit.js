@@ -1,14 +1,8 @@
-const db = require('./db');
+const { query } = require('./db');
 
 const createTableUsuario = async () => {
-    const checkTableUsuarioQUery = `SELECT to_regclass('public.usuario')`;
-
-    try {
-        const result = await db.query(checkTableUsuarioQUery);
-
-        if (result.rows[0].to_regclass === null) {
-            const createQueryUsuario = `
-            CREATE TABLE usuario (
+    const createQueryUsuario = `
+        CREATE TABLE IF NOT EXISTS usuario (
             id SERIAL PRIMARY KEY NOT NULL,
             nome VARCHAR(100) NOT NULL,
             sobrenome VARCHAR(100) NOT NULL,
@@ -17,49 +11,54 @@ const createTableUsuario = async () => {
             password VARCHAR(100) NOT NULL,
             historico_pontuacoes JSONB,
             tentativas_login INT DEFAULT 0,
-            tempo_bloqueio TIMESTAMP NULL
-            );`
+            tempo_bloqueio TIMESTAMP NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    `;
 
-            await db.query(createQueryUsuario);
-            console.log("Tabela Usuário criada com sucessso!")
-        } else {
-            console.log("Tabela Usuário já existe!")
-        };
-    } catch (error){
-        console.log("Erro ao criar a tebela Usuário!", error.message);
+    try {
+        await query(createQueryUsuario);
+        console.log("✅ Tabela Usuário verificada/criada com sucesso!");
+    } catch (error) {
+        console.error("❌ Erro ao criar tabela Usuário:", error.message);
+        throw error;
     }
 };
 
 const createTablePergunta = async () => {
-    const checkTablePerguntaQuery = `SELECT to_regclass('public.pergunta')`;    
-
-    try {
-        const result = await db.query(checkTablePerguntaQuery);
-
-        if (result.rows[0].to_regclass === null) {
-            const createQueryPergunta = `
-            CREATE TABLE pergunta (
+    const createQueryPergunta = `
+        CREATE TABLE IF NOT EXISTS pergunta (
             id SERIAL PRIMARY KEY NOT NULL,
             categoria TEXT NOT NULL,
             pontuacao INTEGER NOT NULL,
             pergunta TEXT NOT NULL,
             resposta_correta TEXT NOT NULL,
-            respostas_incorretas JSONB NOT NULL
-            );`
+            respostas_incorretas JSONB NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    `;
 
-            await db.query(createQueryPergunta);
-            console.log("Tabela Pergunta criada com sucesso!");
-        } else {
-            console.log("Tabela Pergunta já existe!");
-        }
+    try {
+        await query(createQueryPergunta);
+        console.log("✅ Tabela Pergunta verificada/criada com sucesso!");
     } catch (error) {
-        console.log("Erro ao criar a tabela Pergunta!", error.message);
+        console.error("❌ Erro ao criar tabela Pergunta:", error.message);
+        throw error;
     }
 };
 
 const initDb = async () => {
-    await createTableUsuario();
-    await createTablePergunta();
+    try {
+        console.log('🔄 Inicializando banco de dados no Neon DB...');
+        await createTableUsuario();
+        await createTablePergunta();
+        console.log('✅ Banco de dados inicializado com sucesso!');
+    } catch (error) {
+        console.error('❌ Erro crítico na inicialização do banco:', error.message);
+        throw error;
+    }
 };
 
 module.exports = initDb;
