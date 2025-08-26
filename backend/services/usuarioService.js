@@ -50,18 +50,18 @@ class UsuarioService {
         const senhaValida = await bcrypt.compare(senha, usuario.password);
         if (!senhaValida) {
             await repository.incrementarTentativas(email);
-            const tentativasAtuais = (usuario.tentativasLogin || 0) + 1;
+            const tentativasAtuais = (usuario.tentativas_login || 0) + 1;
 
             if ((usuario.tentativas_login >= MAX_TENTATIVAS)) {
                 await repository.bloquearUsuario(email, TEMPO_BLOQUEIO_MINUTOS);
                 throw { status: 403, message: `Usuario bloqueado por ${TEMPO_BLOQUEIO_MINUTOS} minutos devido a muitas tentativas.` };
         }
-        throw { staus: 401, message: `Email ou senha incorretos. Tentativas restantes: ${MAX_TENTATIVAS - tentativasAtuais}`};
+        throw { status: 401, message: `Email ou senha incorretos. Tentativas restantes: ${MAX_TENTATIVAS - tentativasAtuais}`};
     }
 
     await repository.resetarTentativas(email);
 
-    const token = authService.genereteToken({
+    const token = authService.generateToken({
         id: usuario.id,
         email: usuario.email,
         nome: usuario.nome
