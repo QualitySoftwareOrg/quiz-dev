@@ -26,6 +26,7 @@ export default function CadastroScreen() {
   const [dataNascimento, setDataNascimento] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
   const [otp, setOtp] = useState('');
   const [showOtp, setShowOtp] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -43,8 +44,12 @@ export default function CadastroScreen() {
         Alert.alert('Atenção', 'O sobrenome deve conter apenas letras.');
         return;
       }
-      if (!nome || !sobrenome || !email || !senha) {
+      if (!nome || !sobrenome || !email || !senha || !confirmarSenha) {
         Alert.alert('Atenção', 'Preencha todos os campos obrigatórios.');
+        return;
+      }
+      if (senha !== confirmarSenha) {
+        Alert.alert('Atenção', 'As senhas não coincidem.');
         return;
       }
       setLoading(true);
@@ -145,6 +150,14 @@ export default function CadastroScreen() {
               placeholder="Senha"
               value={senha}
               onChangeText={setSenha}
+              secureTextEntry
+              style={styles.input}
+              placeholderTextColor={colors.textLight}
+            />
+            <TextInput
+              placeholder="Confirmar Senha"
+              value={confirmarSenha}
+              onChangeText={setConfirmarSenha}
               secureTextEntry
               style={styles.input}
               placeholderTextColor={colors.textLight}
