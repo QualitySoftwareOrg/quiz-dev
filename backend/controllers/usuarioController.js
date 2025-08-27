@@ -1,11 +1,13 @@
 
-const usuarioService = require('../services/usuarioService');
-const otpService = require('../services/otpService');
+const UsuarioService = require('../services/usuarioService');
+const OtpService = require('../services/otpService');
+
 
 class UsuarioController {
+
     async getAll(req, res) {
         try {
-            const usuarios = await usuarioService.getAll();
+            const usuarios = await UsuarioService.getAll();
             res.status(200).json(usuarios);
         } catch (error) {
             console.error('Erro ao buscar usuarios', error);
@@ -16,7 +18,7 @@ class UsuarioController {
     async getById (req, res) {
         try {
             const { id } = req.params;
-            const usuarios = await usuarioService.getById(id);
+            const usuarios = await UsuarioService.getById(id);
             
             if (!usuarios) {
                 return res.status(404).json({ error: 'Usuario não encontrado' });
@@ -32,7 +34,7 @@ class UsuarioController {
     async create(req, res) {
         try {
             const usuario = req.body;
-            const usuarios = await usuarioService.create(usuario);
+            const usuarios = await UsuarioService.create(usuario);
             const token = jwt.sign(
                 { id: usuarios.id, email: usuarios.email, nome: usuarios.nome },
                 JWT_SECRET,
@@ -52,7 +54,7 @@ class UsuarioController {
         try {
             const { id } = req.params;
             const usuario  = req.body;
-            const usuarioAtualizado = await usuarioService.update(id, usuario);
+            const usuarioAtualizado = await UsuarioService.update(id, usuario);
 
             if (!usuarioAtualizado) {
                 return res.status(404).json({ error: 'Usuario não encontrado' });
@@ -67,7 +69,7 @@ class UsuarioController {
     async delete(req, res) {
         try {
             const { id } = req.params;
-            const usuarioDeletado = await usuarioService.delete(id);
+            const usuarioDeletado = await UsuarioService.delete(id);
 
             if (!usuarioDeletado) {
                 return res.status(404).json({message: 'Usuario não encontrado para a remoção.'})
@@ -86,18 +88,20 @@ class UsuarioController {
                     if (!email) {
                         return res.status(400).json ({error: 'Email é obrigatorio'})
                     }
-                await otpService.solicitarOtp(email);
+                    await OtpService.solicitarOtp(email);
                 res.status(200).json({ message: 'OTP enviada para o seu e-mail'})
             } catch (error) {
                 res.status(400).json({ erro: error.message });
+                console.error(error)
             }
         }
     async verificarOtp(req, res) {
         try {
-            const { email, otp } = req.body;
-            const token = await otpService.verificarOtp(email, otp);
-            return res.status(200).json({ token })
+            const {email, otp, nome, sobrenome, data_nascimento, password } = req.body;
+            const result = await OtpService.verificarOtp(email, otp, nome, sobrenome, data_nascimento, password);
+            return res.status(201).json( result )
         } catch (error) {
+            console.log(error)
             return res.status(400).json({ error: error.message})
         }
     }
@@ -108,10 +112,11 @@ class UsuarioController {
             if (!email || !password) {
                 return res.status(400).json({message: 'Email e password são obrigatorios'});
             }
-            const result = await usuarioService.login( email, password );
+            const result = await UsuarioService.login( email, password );
             res.status(200).json(result);
 
         } catch (error) {
+            console.log(error)
             res.status(error.status || 500).json({ message: error.message || 'Erro ao efetuar login'});
         }
     }
