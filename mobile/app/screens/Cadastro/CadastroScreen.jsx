@@ -31,11 +31,17 @@ export default function CadastroScreen() {
   const [showOtp, setShowOtp] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Função para solicitar OTP na tela de cadastro
   const solicitarOtp = async () => {
     try {
       // Regex: permite apenas letras (maiúsculas/minúsculas, com acento) e espaços
       const nomeValido = /^[A-Za-zÀ-ÿ\s]+$/.test(nome);
       const sobrenomeValido = /^[A-Za-zÀ-ÿ\s]+$/.test(sobrenome);
+      
+      if (!nome || !sobrenome || !dataNascimento || !email || !senha || !confirmarSenha) {
+        Alert.alert('Atenção', 'Preencha todos os campos.');
+        return;
+      }
       if (!nomeValido) {
         Alert.alert('Atenção', 'O nome deve conter apenas letras.');
         return;
@@ -44,29 +50,27 @@ export default function CadastroScreen() {
         Alert.alert('Atenção', 'O sobrenome deve conter apenas letras.');
         return;
       }
-      if (!nome || !sobrenome || !email || !senha || !confirmarSenha) {
-        Alert.alert('Atenção', 'Preencha todos os campos obrigatórios.');
-        return;
-      }
       if (senha !== confirmarSenha) {
         Alert.alert('Atenção', 'As senhas não coincidem.');
         return;
       }
       setLoading(true);
-      await api.post('/usuarios/solicitar-otp', { email });
-      setShowOtp(true);
-      Alert.alert('Verificação', 'Enviamos um código para seu e-mail.');
+
+      const response = await api.post('/usuarios/solicitar-otp', { email });
+
+      if (response.status === 200) {
+        setShowOtp(true);
+        Alert.alert('Verificação', 'Enviamos um código para seu e-mail.');
+      }
     } catch (error) {
-      // Verifica se a resposta do backend contém o erro de email já cadastrado
-      if (
-        error.response &&
-        error.response.data &&
-        (error.response.data.error === 'Email já cadastrado' ||
-          error.response.data.message === 'Email já cadastrado')
-      ) {
-        Alert.alert('Erro', 'Email inserido já está em uso');
+      if (error.response) {
+        if (error.response.status === 409) {
+          Alert.alert('Erro', error.response.data.error || 'Email já cadastrado.');
+        } else {
+          Alert.alert('Erro', error.response.data.error || 'Erro ao solicitar OTP.');
+        }
       } else {
-        Alert.alert('Erro', 'Não foi possível enviar o OTP.');
+        Alert.alert('Erro', 'Erro de conexão. Tente novamente.');
       }
     } finally {
       setLoading(false);

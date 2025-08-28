@@ -43,10 +43,11 @@ class UsuarioController {
             return res.status(201).json({message: 'Usuario criado com sucesso',token , usuario: usuarios});
         } catch (error) {
             if (error.message === 'Email já cadastrado') {
-                return res.status(400).json({error: 'Email já cadastrado'});
+                return res.status(409).json({error: 'Email já cadastrado'});
+            }else{
+                console.error('Erro ao criar usuario', error);
+                return res.status(400).json({error: 'Erro ao criar usuario status 400' });
             }
-            console.error('Erro ao criar usuario', error);
-            return res.status(400).json({error: 'Erro ao criar usuario'});
         }
     }
 
@@ -86,12 +87,12 @@ class UsuarioController {
             try {
                 const { email } = req.body;                
                     if (!email) {
-                        return res.status(400).json ({error: 'Email é obrigatorio'})
+                        return res.status(409).json ({error: 'Email é obrigatorio'})
                     }
                     await OtpService.solicitarOtp(email);
                 res.status(200).json({ message: 'OTP enviada para o seu e-mail'})
             } catch (error) {
-                res.status(400).json({ erro: error.message });
+                res.status(409).json({ erro: error.message });
                 console.error(error)
             }
         }
