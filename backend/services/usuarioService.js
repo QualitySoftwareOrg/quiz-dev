@@ -17,6 +17,11 @@ class UsuarioService {
     }
 
     async create (dados) {
+        const { email } = dados;
+        const usuarioExistente = await repository.getByEmail(email);
+        if (usuarioExistente) {
+            throw new Error('Email já cadastrado');
+        }
         dados.password = await bcrypt.hash(dados.password, 10);
         const novoUsuario = await repository.create(dados);
         return novoUsuario;
