@@ -95,25 +95,34 @@ Atualmente, novas funcionalidades estão sendo planejadas, como:
 
 ## 📦 Como executar o projeto:
 
+> **OBS**: Para melhor funcionamento, é recomendado o download do aplicativo **Expo Go** (disponível para Android e iOS), pois o projeto ainda está em andamento e não foi feito o deploy completo.  
+> A branch mais atualizada no momento é a **sprint2**, então é necessário mudar para ela antes de rodar o projeto.
+
+---
+
 ## Para rodar o Mobile:
 
 ### 1. Clone o repositório:
-
 ```bash
 git clone https://github.com/eikefrota/quiz-dev.git
 ```
 
-### 2. Acesse a pasta do projeto mobile:
+### 2. Mude para a branch mais atualizada (sprint2):
+```bash
+git checkout sprint2
+```
+
+### 3. Acesse a pasta do projeto mobile:
 ```bash
 cd quiz-dev/mobile
 ```
 
-### 3. Instale as dependências:
+### 4. Instale as dependências:
 ```bash
 npm install
 ```
 
-### 4. Execute o app com Expo:
+### 5. Execute o app com Expo:
 ```bash
 npm start
 ```
@@ -154,3 +163,4 @@ npm run dev
 ## 🤝 Contribuições
 
 Contribuições são muito bem-vindas! Fique à vontade para abrir issues ou pull requests com sugestões, melhorias ou correções.
+
