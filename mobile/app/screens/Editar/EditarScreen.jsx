@@ -26,6 +26,8 @@ export default function EditarScreen() {
   const [dataNascimento, setDataNascimento] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [novaSenha, setNovaSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
   const [usuarioId, setUsuarioId] = useState(null);
 
   useEffect(() => {
@@ -85,6 +87,14 @@ export default function EditarScreen() {
     }
   };
 
+  const handleEditarUsuario = async () => {
+    if (novaSenha && novaSenha !== confirmarSenha) {
+      Alert.alert('Erro', 'As senhas não coincidem.');
+      return;
+    }
+    salvar();
+  };
+
   return (
     <LinearGradient
       colors={['#510870', '#a228b0']}
@@ -127,13 +137,21 @@ export default function EditarScreen() {
         />
         <TextInput
           placeholder="Nova senha"
-          value={senha}
-          onChangeText={setSenha}
+          value={novaSenha}
+          onChangeText={setNovaSenha}
           secureTextEntry
           style={styles.input}
           placeholderTextColor={colors.textLight}
         />
-        <TouchableOpacity style={styles.button} onPress={salvar}>
+        <TextInput
+          placeholder="Confirmar Nova Senha"
+          value={confirmarSenha}
+          onChangeText={setConfirmarSenha}
+          secureTextEntry
+          style={styles.input}
+          placeholderTextColor={colors.textLight}
+        />
+        <TouchableOpacity style={styles.button} onPress={handleEditarUsuario}>
           <Text style={styles.buttonText}>Salvar</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.link} onPress={() => navigation.goBack()}>
