@@ -16,6 +16,10 @@ const styles = StyleSheet.create({
         fontFamily: fonts.bold,
         textAlign: 'center',
     },
+    label: {
+        color: '#fff',
+        fontSize: 18,
+    },
 });
 
 export default styles;
