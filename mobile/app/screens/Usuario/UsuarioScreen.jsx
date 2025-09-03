@@ -86,7 +86,7 @@ export default function UsuarioScreen() {
           style={styles.button}
           onPress={() => navigation.navigate('Editar')}
         >
-          <Text style={styles.buttonText}>Editar informações</Text>
+          <Text style={styles.buttonText}>EDITAR</Text>
         </TouchableOpacity>
       </View>
     </LinearGradient>
