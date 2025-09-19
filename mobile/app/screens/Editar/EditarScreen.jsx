@@ -81,7 +81,16 @@ export default function EditarScreen() {
       Alert.alert('Sucesso', 'Dados atualizados com sucesso!');
       navigation.goBack();
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível atualizar os dados.');
+      if (error.response) {
+        if (error.response.status === 422) {
+          Alert.alert('Erro', 'Erro ao cadastrar senha.');
+        } else if (error.response.status === 401) {
+          Alert.alert('Erro', error.response.data.message || 'Dados inválidos.');
+        } else {
+          Alert.alert('Erro', 'Erro inesperado no servidor.');
+        }
+      } else {
+        Alert.alert('Erro', 'Não foi possível atualizar os dados.');
     }
   };
 
@@ -142,4 +151,4 @@ export default function EditarScreen() {
       </View>
     </LinearGradient>
   );
-}
+  }}

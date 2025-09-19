@@ -66,6 +66,11 @@ class UsuarioRoutes {
          *             properties:
          *               nome:
          *                 type: string
+         *               sobrenome:
+         *                 type: string
+         *               data_nascimento:
+         *                 type: string
+         *                 format: date
          *               email:
          *                 type: string
          *               password:
@@ -99,6 +104,11 @@ class UsuarioRoutes {
          *             properties:
          *               nome:
          *                 type: string
+         *               sobrenome:
+         *                 type: string
+         *               data_nascimento:
+         *                 type: string
+         *                 format: date
          *               email:
          *                 type: string
          *               password:

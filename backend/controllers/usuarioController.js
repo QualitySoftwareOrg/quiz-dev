@@ -57,6 +57,11 @@ class UsuarioController {
             if (!usuarioAtualizado) {
                 return res.status(404).json({ error: 'Usuario não encontrado' });
             }
+
+            if (usuarioAtualizado.message === 'A nova senha deve ser diferente da senha atual') {
+                return res.status(422).json({ error: usuarioAtualizado.message});
+            }
+            
             return res.status(200).json({message: 'Usuario atualizado com sucesso', usuario: usuarioAtualizado })
         } catch (error) {
             console.error('Erro ao atualizar usuario', error);
