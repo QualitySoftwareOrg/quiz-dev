@@ -24,14 +24,13 @@ class UsuarioService {
 
     async update (id, dados) {
         const usuarioExistente = await repository.getById(id);
-        let novaSenha = dados.password;
-
+        let novaSenha = dados.senha;
         if (novaSenha) {
             const mesmaSenha = await bcrypt.compare(novaSenha, usuarioExistente.password)
-            if (mesmaSenha) {
+            if (mesmaSenha === true) {
                 throw { message: 'A nova senha deve ser diferente da senha atual' };
             }
-            dados.password = await bcrypt.hash(novaSenha, 10);
+            dados.senha = await bcrypt.hash(novaSenha, 10);
         }
         const usuarioAtualizado = await repository.update(id, dados);
         return usuarioAtualizado;

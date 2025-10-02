@@ -53,7 +53,6 @@ class UsuarioController {
             const { id } = req.params;
             const usuario  = req.body;
             const usuarioAtualizado = await usuarioService.update(id, usuario);
-
             if (!usuarioAtualizado) {
                 return res.status(404).json({ error: 'Usuario não encontrado' });
             }
@@ -117,7 +116,7 @@ class UsuarioController {
             res.status(200).json(result);
 
         } catch (error) {
-            res.status(error.status || 500).json({ message: error.message || 'Erro ao efetuar login'});
+            res.status(500).json({ message: error.message || 'Erro ao efetuar login'});
         }
     }
 }
