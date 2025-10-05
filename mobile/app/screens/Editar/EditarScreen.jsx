@@ -83,7 +83,7 @@ export default function EditarScreen() {
     } catch (error) {
       if (error.response) {
         if (error.response.status === 422) {
-          Alert.alert('Erro', 'Erro ao cadastrar senha.');
+          Alert.alert('Erro', error.response.data.error || 'Erro ao cadastrar senha.');
         } else if (error.response.status === 401) {
           Alert.alert('Erro', error.response.data.message || 'Dados inválidos.');
         } else {
