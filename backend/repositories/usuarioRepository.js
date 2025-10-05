@@ -16,7 +16,8 @@ class UsuarioRepository {
         const result = await db.query('SELECT * FROM usuario WHERE email = $1', [email]);
         return result.rows[0]
     }
-    async create({ nome, sobrenome, data_nascimento, email, password, historico_pontuacoes }) {
+    async create( dados ) {
+        let { nome, sobrenome, data_nascimento, email, password, historico_pontuacoes} = dados;
         // Verifica se já existe usuário com o mesmo email
         const existing = await db.query('SELECT * FROM usuario WHERE email = $1', [email]);
         if (existing.rows.length > 0) {
@@ -24,12 +25,13 @@ class UsuarioRepository {
         }
         // Define valor padrão se não enviado
         if (historico_pontuacoes === undefined) {
-            historico_pontuacoes = {};
+            historico_pontuacoes = JSON.stringify({});
         }
         const result = await db.query(
             'INSERT INTO usuario (nome, sobrenome, data_nascimento, email, password, historico_pontuacoes) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
             [nome, sobrenome, data_nascimento, email, password, historico_pontuacoes]
         );
+        
         return new Usuario(result.rows[0]);
     }
     async update(id, dados) {

@@ -84,25 +84,25 @@ class UsuarioController {
         }
     }
 
-        async solicitarOtp(req, res) {
-            try {
-                const { email } = req.body;                
-                    if (!email) {
-                        return res.status(400).json ({error: 'Email é obrigatorio'})
-                    }
+    async solicitarOtp(req, res) {
+        try {
+            const { email } = req.body;                
+                if (!email) {
+                    return res.status(400).json ({error: 'Email é obrigatorio'})
+                }
                 await otpService.solicitarOtp(email);
                 res.status(200).json({ message: 'OTP enviada para o seu e-mail'})
             } catch (error) {
                 res.status(400).json({ erro: error.message });
             }
-        }
+    }
     async verificarOtp(req, res) {
         try {
-            const { email, otp } = req.body;
-            const token = await otpService.verificarOtp(email, otp);
-            return res.status(200).json({ token })
+            const { email, otp, nome, sobrenome, data_nascimento, password } = req.body;
+            const usuario = await otpService.verificarOtp(email, otp, nome, sobrenome, data_nascimento, password);
+            return res.status(201).json({ usuario })
         } catch (error) {
-            return res.status(400).json({ error: error.message})
+            return res.status(400).json({ erro: error.message })
         }
     }
     async login(req, res) {

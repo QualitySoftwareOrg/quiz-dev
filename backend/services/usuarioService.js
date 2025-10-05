@@ -19,6 +19,7 @@ class UsuarioService {
     async create (dados) {
         dados.password = await bcrypt.hash(dados.password, 10);
         const novoUsuario = await repository.create(dados);
+        console.log("processando dados")
         return novoUsuario;
     }
 

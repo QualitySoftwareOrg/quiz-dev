@@ -2,13 +2,10 @@ const sendOtpEmail  = require('./emailService');
 const OtpRepository = require('../repositories/otpRepository');
 const UsuarioRepository = require('../repositories/usuarioRepository');
 const AuthService = require('./authService');
+const UsuarioService = require('./usuarioService')
 
 class OtpService {
-    cosntructor() {
-        this.otpRepository = new OtpRepository();
-        this.usuarioRepository = new UsuarioRepository();
-        this.authService = new AuthService();
-    }
+
     
     async solicitarOtp(email) {
         console.log('📧 Solicitando OTP para:', email);
@@ -41,25 +38,26 @@ class OtpService {
         };
     }
 
-    async verificarOtp(email) {
-        const otpValido = await OtpRepository.findByEmail(email);
+    async verificarOtp(email, otp, nome, sobrenome, data_nascimento, password) {
+        
+        const otpValido = await OtpRepository.findByEmail(email, otp);
         if (!otpValido) {
-            throw { message: 'OTP inválido ou expirado' };
+            throw { status: 401, message: 'OTP inválido ou expirado' };
         }
-        // Busca o usuário no banco
-        const usuario = await UsuarioRepository.getByEmail(email);
-        if (!usuario) {
-            throw { message: 'Usuário não encontrado' };
-        }
+
+        const dados = { nome, sobrenome, data_nascimento, email, password};
+        const novoUsuario = await UsuarioService.create(dados)
         // Gera JWT
         const token = AuthService.genereteToken({
-            id: usuario.id,
-            email: usuario.email,
+            id: novoUsuario.id,
+            email: novoUsuario.email,
             authMethod: 'otp'
         }, '30m');
+
         // Remove ou invalida OTP após uso
-        await OtpRepository.excluirOtp(email);
-        return { message: 'OTP verificada com sucesso', token, usuario };
+        await OtpRepository.deleteByEmail(email);
+
+        return { message: 'OTP verificada com sucesso', token, novoUsuario };
         }
     };
 

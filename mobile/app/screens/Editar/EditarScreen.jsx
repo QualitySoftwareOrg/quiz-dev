@@ -92,7 +92,7 @@ export default function EditarScreen() {
       } else {
         Alert.alert('Erro', 'Não foi possível atualizar os dados.');
     }
-  };
+  };}
 
   return (
     <LinearGradient
@@ -151,4 +151,4 @@ export default function EditarScreen() {
       </View>
     </LinearGradient>
   );
-  }}
+  }
