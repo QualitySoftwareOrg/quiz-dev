@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1760396458215" clover="3.2.0">
+  <project timestamp="1760396458215" name="All files">
+    <metrics statements="27" coveredstatements="27" conditionals="1" coveredconditionals="0" methods="7" coveredmethods="7" elements="35" coveredelements="34" complexity="0" loc="27" ncloc="27" packages="2" files="4" classes="4"/>
+    <package name="models">
+      <metrics statements="16" coveredstatements="16" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
+      <file name="perguntaModel.js" path="C:\Users\eikef\OneDrive\Área de Trabalho\eikefrota\projetos\quiz-dev\backend\models\perguntaModel.js">
+        <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="12" count="5" type="stmt"/>
+      </file>
+      <file name="usuarioModel.js" path="C:\Users\eikef\OneDrive\Área de Trabalho\eikefrota\projetos\quiz-dev\backend\models\usuarioModel.js">
+        <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="25" count="4" type="stmt"/>
+      </file>
+    </package>
+    <package name="services">
+      <metrics statements="11" coveredstatements="11" conditionals="1" coveredconditionals="0" methods="4" coveredmethods="4"/>
+      <file name="authService.js" path="C:\Users\eikef\OneDrive\Área de Trabalho\eikefrota\projetos\quiz-dev\backend\services\authService.js">
+        <metrics statements="7" coveredstatements="7" conditionals="1" coveredconditionals="0" methods="3" coveredmethods="3"/>
+        <line num="1" count="3" type="stmt"/>
+        <line num="2" count="3" type="stmt"/>
+        <line num="6" count="3" type="stmt"/>
+        <line num="7" count="3" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="21" count="3" type="stmt"/>
+      </file>
+      <file name="emailService.js" path="C:\Users\eikef\OneDrive\Área de Trabalho\eikefrota\projetos\quiz-dev\backend\services\emailService.js">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="41" count="1" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>

@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --runInBand --coverage",
+    "test:watch": "jest --watch",
     "dev": "nodemon index.js",
     "start": "node index.js",
     "vercel-build": "node ./db/dbInit.js"
@@ -26,6 +27,10 @@
     "swagger": "^0.0.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.6.1",
+    "supertest": "^6.3.3"
   },
   "description": ""
 }

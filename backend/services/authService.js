@@ -7,7 +7,7 @@ class AuthService {
         this.tokenExpiration = '1h';
     }
 
-    genereteToken(payload, expiresIn = this.tokenExpiration) {
+    generateToken(payload, expiresIn = this.tokenExpiration) {
         return jwt.sign(payload, this.jwtSecret, { expiresIn });
     }
 
