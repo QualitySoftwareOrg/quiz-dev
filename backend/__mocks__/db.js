@@ -1,6 +1,6 @@
-// Mock for db.query
+// Mock para db.query
 const mockQuery = jest.fn(async (text, params) => {
-  // default empty result
+  // resultado vazio padrão
   return { rows: [] };
 });
 

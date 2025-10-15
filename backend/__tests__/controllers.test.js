@@ -2,10 +2,9 @@ const perguntasController = require("../controllers/perguntasController");
 const usuarioController = require("../controllers/usuarioController");
 const usuarioService = require("../services/usuarioService");
 
-describe("Controllers", () => {
+describe("Controladores", () => {
   beforeEach(() => jest.clearAllMocks());
-
-  test("PerguntaController.getPerguntas returns list", async () => {
+  test("PerguntaController.getPerguntas retorna lista", async () => {
     // inject mock service into controller instance
     perguntasController.perguntasService = {
       getPerguntas: jest.fn().mockResolvedValue([{ id: 1 }]),
@@ -16,7 +15,7 @@ describe("Controllers", () => {
     expect(res.json).toHaveBeenCalledWith([{ id: 1 }]);
   });
 
-  test("PerguntaController.getPerguntaById returns 404 when not found", async () => {
+  test("PerguntaController.getPerguntaById retorna 404 quando não encontrado", async () => {
     perguntasController.perguntasService = {
       getPerguntaById: jest.fn().mockResolvedValue(null),
     };
@@ -26,7 +25,7 @@ describe("Controllers", () => {
     expect(res.status).toHaveBeenCalledWith(404);
   });
 
-  test("PerguntaController.createPergunta returns 201", async () => {
+  test("PerguntaController.createPergunta retorna 201", async () => {
     perguntasController.perguntasService = {
       createPergunta: jest.fn().mockResolvedValue({ id: 5 }),
     };
@@ -36,7 +35,27 @@ describe("Controllers", () => {
     expect(res.status).toHaveBeenCalledWith(201);
   });
 
-  test("UsuarioController.create returns 201 on success", async () => {
+  test("PerguntaController.getPerguntasByCategoria valida categoria ausente", async () => {
+    perguntasController.perguntasService = {
+      getPerguntasByCategoria: jest.fn(),
+    };
+    const req = { query: {} };
+    const res = { status: jest.fn(() => res), json: jest.fn() };
+    await perguntasController.getPerguntasByCategoria(req, res, jest.fn());
+    expect(res.status).toHaveBeenCalledWith(400);
+  });
+
+  test("PerguntaController.getPerguntasByCategoria retorna 404 quando lista vazia", async () => {
+    perguntasController.perguntasService = {
+      getPerguntasByCategoria: jest.fn().mockResolvedValue([]),
+    };
+    const req = { query: { categoria: "x" } };
+    const res = { status: jest.fn(() => res), json: jest.fn() };
+    await perguntasController.getPerguntasByCategoria(req, res, jest.fn());
+    expect(res.status).toHaveBeenCalledWith(404);
+  });
+
+  test("UsuarioController.create retorna 201 em sucesso", async () => {
     usuarioService.create = jest
       .fn()
       .mockResolvedValue({ id: 1, email: "a@a.com", nome: "A" });
@@ -46,7 +65,7 @@ describe("Controllers", () => {
     expect(res.status).toHaveBeenCalledWith(201);
   });
 
-  test("UsuarioController.update returns 404 when not found", async () => {
+  test("UsuarioController.update retorna 404 quando não encontrado", async () => {
     usuarioService.update = jest.fn().mockResolvedValue(null);
     const req = { params: { id: 10 }, body: {} };
     const res = { status: jest.fn(() => res), json: jest.fn() };
@@ -54,14 +73,14 @@ describe("Controllers", () => {
     expect(res.status).toHaveBeenCalledWith(404);
   });
 
-  test("UsuarioController.solicitarOtp requires email", async () => {
+  test("UsuarioController.solicitarOtp exige email", async () => {
     const req = { body: {} };
     const res = { status: jest.fn(() => res), json: jest.fn() };
     await usuarioController.solicitarOtp(req, res);
     expect(res.status).toHaveBeenCalledWith(400);
   });
 
-  test("UsuarioController.verificarOtp success", async () => {
+  test("UsuarioController.verificarOtp sucesso", async () => {
     // override otpService implementation in module cache
     const otpService = require("../services/otpService");
     otpService.verificarOtp = jest.fn().mockResolvedValue({ token: "t" });

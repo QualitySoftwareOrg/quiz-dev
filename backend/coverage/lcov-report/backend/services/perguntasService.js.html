@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">37.5% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>3/8</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">16.66% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/6</span>
+                <span class='fraction'>6/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">37.5% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>3/8</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -86,49 +86,49 @@
 <a name='L21'></a><a href='#L21'>21</a>
 <a name='L22'></a><a href='#L22'>22</a>
 <a name='L23'></a><a href='#L23'>23</a>
-<a name='L24'></a><a href='#L24'>24</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<a name='L24'></a><a href='#L24'>24</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span></td><td class="text"><pre class="prettyprint lang-js">const perguntasRepository = require('../repositories/perguntasRepository');
+<span class="cline-any cline-yes">12x</span></td><td class="text"><pre class="prettyprint lang-js">const perguntasRepository = require('../repositories/perguntasRepository');
 &nbsp;
 class PerguntasService {
     async getPerguntas() {
         return await perguntasRepository.getAll();
     }
-<span class="fstat-no" title="function not covered" >    as</span>ync getPerguntaById(id) {
-<span class="cstat-no" title="statement not covered" >        return await perguntasRepository.getById(id);</span>
+    async getPerguntaById(id) {
+        return await perguntasRepository.getById(id);
     }
-<span class="fstat-no" title="function not covered" >    as</span>ync getPerguntasByCategoria(categoria) {
-<span class="cstat-no" title="statement not covered" >        return await perguntasRepository.getByCategoria(categoria);</span>
+    async getPerguntasByCategoria(categoria) {
+        return await perguntasRepository.getByCategoria(categoria);
     }
-<span class="fstat-no" title="function not covered" >    as</span>ync createPergunta(data) {
-<span class="cstat-no" title="statement not covered" >        return await perguntasRepository.create(data);</span>
+    async createPergunta(data) {
+        return await perguntasRepository.create(data);
     }
-<span class="fstat-no" title="function not covered" >    as</span>ync updatePergunta(id, data) {
-<span class="cstat-no" title="statement not covered" >        return await perguntasRepository.update(id, data);</span>
+    async updatePergunta(id, data) {
+        return await perguntasRepository.update(id, data);
     }
-<span class="fstat-no" title="function not covered" >    as</span>ync removePergunta(id) {
-<span class="cstat-no" title="statement not covered" >        return await perguntasRepository.remove(id);</span>
+    async removePergunta(id) {
+        return await perguntasRepository.remove(id);
     }
 }
 &nbsp;
@@ -139,7 +139,7 @@ module.exports = PerguntasService;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-10-13T21:56:27.222Z
+                at 2025-10-15T20:52:59.883Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

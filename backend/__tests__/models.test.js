@@ -1,8 +1,8 @@
 const Usuario = require("../models/usuarioModel");
 const Pergunta = require("../models/perguntaModel");
 
-describe("Models", () => {
-  test("Usuario.toJson returns correct shape", () => {
+describe("Modelos", () => {
+  test("Usuario.toJson retorna formato correto", () => {
     const u = new Usuario({
       id: 1,
       nome: "Ana",
@@ -22,7 +22,7 @@ describe("Models", () => {
     });
   });
 
-  test("Pergunta constructs correctly", () => {
+  test("Pergunta instancia corretamente", () => {
     const p = new Pergunta({
       id: 2,
       categoria: "Geral",

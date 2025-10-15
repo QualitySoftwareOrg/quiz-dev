@@ -2,8 +2,8 @@ const sendOtpEmail = require("../services/emailService");
 
 jest.mock("nodemailer");
 
-describe("EmailService", () => {
-  test("sendOtpEmail calls transporter.sendMail", async () => {
+describe("Serviço de Email", () => {
+  test("sendOtpEmail chama transporter.sendMail", async () => {
     const nodemailer = require("nodemailer");
     const mockCreate = nodemailer.createTransport;
     const sendMailMock = jest.fn().mockResolvedValue({ messageId: "ok" });

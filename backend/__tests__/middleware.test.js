@@ -3,7 +3,7 @@ const ValidateUsuario = require("../middleware/validateUsuario");
 const ErroPerguntaMiddleware = require("../middleware/validadePerguntaMiddleware");
 
 describe("Middleware", () => {
-  test("authMiddleware returns 401 when no token", () => {
+  test("authMiddleware retorna 401 quando não há token", () => {
     const req = { headers: {} };
     const res = { status: jest.fn(() => res), json: jest.fn() };
     const next = jest.fn();
@@ -11,7 +11,7 @@ describe("Middleware", () => {
     expect(res.status).toHaveBeenCalledWith(401);
   });
 
-  test("ValidateUsuario.validateCreate rejects missing fields", () => {
+  test("ValidateUsuario.validateCreate rejeita campos faltando", () => {
     const req = { body: { nome: "Ana" } };
     const res = { status: jest.fn(() => res), json: jest.fn() };
     const next = jest.fn();
@@ -19,7 +19,7 @@ describe("Middleware", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 
-  test("ErroPerguntaMiddleware validarDificuldade rejects bad difficulty", () => {
+  test("ErroPerguntaMiddleware validarDificuldade rejeita dificuldade inválida", () => {
     const req = { body: { dificuldade: "MuitoFacil" } };
     const res = {};
     const next = jest.fn();
