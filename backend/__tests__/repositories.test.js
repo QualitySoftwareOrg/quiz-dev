@@ -24,6 +24,23 @@ describe("Repositories", () => {
     expect(res).toHaveProperty("id", 1);
   });
 
+  test("perguntasRepository.getAll maps rows to Pergunta", async () => {
+    db.query.mockResolvedValueOnce({
+      rows: [
+        {
+          id: 2,
+          categoria: "X",
+          pontuacao: 3,
+          pergunta: "Q2",
+          resposta_correta: "B",
+          respostas_incorretas: "[]",
+        },
+      ],
+    });
+    const res = await perguntasRepository.getAll();
+    expect(Array.isArray(res)).toBe(true);
+  });
+
   test("usuarioRepository.create throws when email exists", async () => {
     db.query.mockResolvedValueOnce({ rows: [{ id: 1 }] }); // existing check
     await expect(
@@ -42,5 +59,11 @@ describe("Repositories", () => {
     await expect(
       otpRepository.createOrUpdate("a@a.com", "1234")
     ).resolves.toBeUndefined();
+  });
+
+  test("usuarioRepository.getById returns null when not found", async () => {
+    db.query.mockResolvedValueOnce({ rows: [] });
+    const res = await usuarioRepository.getById(999);
+    expect(res).toBeNull();
   });
 });
