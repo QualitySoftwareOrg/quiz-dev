@@ -1,13 +1,3 @@
-export function formatCurrency(value) {
-  if (typeof value !== 'number') {
-    return '';
-  }
-  return value.toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  });
-}
-
 export function formatarDataParaExibicao(dataISO) {
   if (!dataISO) return '';
   const data = new Date(dataISO);
