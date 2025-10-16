@@ -4,6 +4,7 @@
   "main": "server.js",
   "scripts": {
     "test": "jest --runInBand --coverage",
+    "test:integration": "jest --runInBand backend/__tests__/integration.test.js -i --coverage=false",
     "test:watch": "jest --watch",
     "dev": "nodemon index.js",
     "start": "node index.js",
