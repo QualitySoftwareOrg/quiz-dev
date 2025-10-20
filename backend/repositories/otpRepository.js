@@ -16,8 +16,8 @@ class OtpRepository {
         `, [email, otp]);
     }
 
-    async findByEmail(email) {
-        const result = await db.query(`SELECT * FROM otps WHERE email = $1`, [email]);
+    async findByEmail(email, otp) {
+        const result = await db.query(`SELECT * FROM otps WHERE email = $1 AND otp = $2`, [email, otp]);
         return result.rows[0];
     }
     async deleteByEmail(email) {

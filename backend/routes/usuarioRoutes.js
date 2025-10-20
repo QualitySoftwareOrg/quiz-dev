@@ -1,8 +1,6 @@
 const express = require('express');
 const controller = require('../controllers/usuarioController');
 const ValidateUsuario = require('../middleware/validateUsuario');
-const jwt = require('jsonwebtoken');
-const JWT_SECRET = process.env.JWT_SECRET || '7670783fa7ecc5d27f3629cb644d294f3ca7cce8cff5a49fcdd08d2d06281570f09de329a2d5b6e0105c500a0e145fb6a188a53f99a69114ae82bb6c44117053';
 const authenticateToken = require('../middleware/authMiddleware');
 
 
@@ -66,6 +64,11 @@ class UsuarioRoutes {
          *             properties:
          *               nome:
          *                 type: string
+         *               sobrenome:
+         *                 type: string
+         *               data_nascimento:
+         *                 type: string
+         *                 format: date
          *               email:
          *                 type: string
          *               password:
@@ -99,6 +102,11 @@ class UsuarioRoutes {
          *             properties:
          *               nome:
          *                 type: string
+         *               sobrenome:
+         *                 type: string
+         *               data_nascimento:
+         *                 type: string
+         *                 format: date
          *               email:
          *                 type: string
          *               password:
@@ -136,7 +144,7 @@ class UsuarioRoutes {
         this.router.post('/login', controller.login)
 
         this.router.post('/solicitar-otp', controller.solicitarOtp);
-        this.router.post('/verificar-otp', controller.verificarOtp);
+        this.router.post('/verificar-otp', ValidateUsuario.validateCreate, controller.verificarOtp);
     }
 
     getRouter() {

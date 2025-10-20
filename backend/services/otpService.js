@@ -1,46 +1,65 @@
-const OtpRepository = require("../repositories/otpRepository");
-const UsuarioRepository = require("../repositories/usuarioRepository");
-const AuthService = require("./authService");
+const sendOtpEmail  = require('./emailService');
+const OtpRepository = require('../repositories/otpRepository');
+const UsuarioRepository = require('../repositories/usuarioRepository');
+const AuthService = require('./authService');
+const UsuarioService = require('./usuarioService')
 
 class OtpService {
-  constructor() {
-    this.otpRepository = OtpRepository; // repository is exported as instance
-    this.usuarioRepository = UsuarioRepository;
-    this.authService = AuthService;
-  }
 
-  async solicitarOtp(email, otp) {
-    // helper: save or update otp
-    return await this.otpRepository.createOrUpdate(email, otp);
-  }
+    
+    async solicitarOtp(email) {
+        console.log('📧 Solicitando OTP para:', email);
+        
+        // Verifica se o usuário existe
+        const usuarioExistente = await UsuarioRepository.getByEmail(email);
+            if (usuarioExistente) {
+            throw { 
+                status: 409, 
+                message: 'Usuário já cadastrado. Faça login ou recupere sua senha.' 
+            };
+        }      
+        
+        // Gera código OTP (6 dígitos)
+        const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+        console.log('🔢 Código OTP gerado:', otpCode);
 
-  async verificarOtp(email, codigoOtp) {
-    const registro = await this.otpRepository.findByEmail(email);
-    if (!registro || registro.otp !== String(codigoOtp)) {
-      throw { status: 401, message: "OTP inválido ou expirado" };
+        // Salva OTP no banco com expiração (ex: 10 minutos)
+        await OtpRepository.createOrUpdate(email, otpCode, 10);
+
+        // TODO: Implementar envio de email aqui
+        await sendOtpEmail(email, otpCode);
+        
+        console.log('📤 OTP gerado (implementar envio de email):', otpCode);
+        
+        return { 
+            success: true, 
+            message: 'OTP enviado com sucesso',
+            otp: otpCode // Em desenvolvimento, pode retornar o código
+        };
     }
 
-    // Busca o usuário no banco
-    const usuario = await this.usuarioRepository.getByEmail(email);
-    if (!usuario) {
-      throw { status: 404, message: "Usuário não encontrado" };
-    }
+    async verificarOtp(email, otp, nome, sobrenome, data_nascimento, password) {
+        
+        const otpValido = await OtpRepository.findByEmail(email, otp);
+        if (!otpValido) {
+            throw { status: 401, message: 'OTP inválido ou expirado' };
+        }
 
-    // Gera JWT
-    const token = this.authService.genereteToken(
-      {
-        id: usuario.id,
-        email: usuario.email,
-        authMethod: "otp",
-      },
-      "30m"
-    );
+        const dados = { nome, sobrenome, data_nascimento, email, password};
+        const novoUsuario = await UsuarioService.create(dados)
+        // Gera JWT
+        const token = AuthService.genereteToken({
+            id: novoUsuario.id,
+            email: novoUsuario.email,
+            authMethod: 'otp'
+        }, '30m');
 
-    // Remove ou invalida OTP após uso
-    await this.otpRepository.deleteByEmail(email);
+        // Remove ou invalida OTP após uso
+        await OtpRepository.deleteByEmail(email);
 
-    return { message: "OTP verificada com sucesso", token, usuario };
-  }
-}
+        return { message: 'OTP verificada com sucesso', token, novoUsuario };
+        }
+    };
+
 
 module.exports = new OtpService();
