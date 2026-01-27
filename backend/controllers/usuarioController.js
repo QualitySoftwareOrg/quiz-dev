@@ -1,8 +1,6 @@
-const db = require('../db/db');
+
 const usuarioService = require('../services/usuarioService');
-const jwt = require('jsonwebtoken');
-const JWT_SECRET = process.env.JWT_SECRET;
-const emailService = require('../services/emailService');
+const otpService = require('../services/otpService');
 
 class UsuarioController {
     async getAll(req, res) {
@@ -55,13 +53,16 @@ class UsuarioController {
             const { id } = req.params;
             const usuario  = req.body;
             const usuarioAtualizado = await usuarioService.update(id, usuario);
-
             if (!usuarioAtualizado) {
                 return res.status(404).json({ error: 'Usuario não encontrado' });
             }
             return res.status(200).json({message: 'Usuario atualizado com sucesso', usuario: usuarioAtualizado })
         } catch (error) {
             console.error('Erro ao atualizar usuario', error);
+
+            if (error.message === 'A nova senha deve ser diferente da senha atual') {
+                return res.status(422).json({ error: error.message});
+            }
             return res.status(400).json({error: 'Erro ao atualizar usuario'});
         }
     }
@@ -83,64 +84,38 @@ class UsuarioController {
     }
 
     async solicitarOtp(req, res) {
-        const { email } = req.body;
-
-        // Verifica se já existe usuário com o mesmo email
-        const existing = await db.query('SELECT * FROM usuario WHERE email = $1', [email]);
-        if (existing.rows.length > 0) {
-            return res.status(400).json({ error: 'Email já cadastrado' });
-        }
-
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-        // Salva ou atualiza o OTP no banco
-        await db.query(
-            `CREATE TABLE IF NOT EXISTS otps (
-                email VARCHAR(100) PRIMARY KEY,
-                otp VARCHAR(10) NOT NULL,
-                criado_em TIMESTAMP DEFAULT NOW()
-            )`
-        );
-        await db.query(
-            `INSERT INTO otps (email, otp) VALUES ($1, $2)
-             ON CONFLICT (email) DO UPDATE SET otp = $2, criado_em = NOW()`,
-            [email, otp]
-        );
-
-        await emailService(email, otp);
-        res.status(200).json({ message: 'OTP enviado para o e-mail.' });
+        try {
+            const { email } = req.body;                
+                if (!email) {
+                    return res.status(400).json ({error: 'Email é obrigatorio'})
+                }
+                await otpService.solicitarOtp(email);
+                res.status(200).json({ message: 'OTP enviada para o seu e-mail'})
+            } catch (error) {
+                res.status(400).json({ erro: error.message });
+            }
     }
-
     async verificarOtp(req, res) {
-        const { email, otp, nome, sobrenome, data_nascimento, password } = req.body;
-
-        // Verifica se já existe usuário com o mesmo email
-        const existing = await db.query('SELECT * FROM usuario WHERE email = $1', [email]);
-        if (existing.rows.length > 0) {
-            return res.status(400).json({ error: 'Email já cadastrado' });
+        try {
+            const { email, otp, nome, sobrenome, data_nascimento, password } = req.body;
+            const usuario = await otpService.verificarOtp(email, otp, nome, sobrenome, data_nascimento, password);
+            return res.status(201).json({ usuario })
+        } catch (error) {
+            return res.status(400).json({ erro: error.message })
         }
+    }
+    async login(req, res) {
+        try {
+            const { email, password } = req.body;
 
-        const result = await db.query('SELECT otp FROM otps WHERE email = $1', [email]);
-        const otpEsperado = result.rows[0]?.otp;
+            if (!email || !password) {
+                return res.status(400).json({message: 'Email e password são obrigatorios'});
+            }
+            const result = await usuarioService.login( email, password );
+            res.status(200).json(result);
 
-        if (otpEsperado === otp) {
-            await db.query('DELETE FROM otps WHERE email = $1', [email]);
-            const usuario = await usuarioService.create({
-                nome,
-                sobrenome,
-                data_nascimento,
-                email,
-                password,
-                historico_pontuacoes: {}
-            });
-            const token = jwt.sign(
-                { id: usuario.id, email: usuario.email, nome: usuario.nome },
-                JWT_SECRET,
-                { expiresIn: '1h' }
-            );
-            return res.status(201).json({ message: 'Usuário criado com sucesso', token, usuario });
-        } else {
-            return res.status(400).json({ message: 'OTP inválido.' });
+        } catch (error) {
+            res.status(500).json({ message: error.message || 'Erro ao efetuar login'});
         }
     }
 }

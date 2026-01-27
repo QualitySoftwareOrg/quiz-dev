@@ -14,6 +14,7 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const login = async () => {
     try {
@@ -22,6 +23,7 @@ export default function LoginScreen() {
         return;
       }
       setLoading(true);
+      setErrorMessage('')
       const response = await api.post('/usuarios/login', { email, password });
       if (response.status === 200) {
         await AsyncStorage.setItem('usuario', JSON.stringify(response.data.usuario));
@@ -32,7 +34,15 @@ export default function LoginScreen() {
         });
       }
     } catch (error) {
-      alert('Email ou senha incorretos.');
+      if (error.response) {
+        if (error.response.status === 403) {
+          setErrorMessage(error.response.data.message || 'Usuário bloqueado temporariamente');
+        } else {
+          setErrorMessage(error.response.data.message || 'Email ou senha incorretos.');
+      }
+        } else {
+          setErrorMessage('Erro ao conectar ao servidor');
+        }
     } finally {
       setLoading(false);
     }
@@ -54,6 +64,12 @@ export default function LoginScreen() {
       </View>
       <View style={styles.inner}>
         <Text style={styles.title}>Login</Text>
+        {errorMessage ? (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{errorMessage}</Text>
+          </View>
+        ) : null}
+
         <TextInput
           placeholder="Email"
           value={email}

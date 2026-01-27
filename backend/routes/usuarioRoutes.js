@@ -1,8 +1,6 @@
 const express = require('express');
 const controller = require('../controllers/usuarioController');
 const ValidateUsuario = require('../middleware/validateUsuario');
-const jwt = require('jsonwebtoken');
-const JWT_SECRET = process.env.JWT_SECRET || '7670783fa7ecc5d27f3629cb644d294f3ca7cce8cff5a49fcdd08d2d06281570f09de329a2d5b6e0105c500a0e145fb6a188a53f99a69114ae82bb6c44117053';
 const authenticateToken = require('../middleware/authMiddleware');
 
 
@@ -66,6 +64,11 @@ class UsuarioRoutes {
          *             properties:
          *               nome:
          *                 type: string
+         *               sobrenome:
+         *                 type: string
+         *               data_nascimento:
+         *                 type: string
+         *                 format: date
          *               email:
          *                 type: string
          *               password:
@@ -99,6 +102,11 @@ class UsuarioRoutes {
          *             properties:
          *               nome:
          *                 type: string
+         *               sobrenome:
+         *                 type: string
+         *               data_nascimento:
+         *                 type: string
+         *                 format: date
          *               email:
          *                 type: string
          *               password:
@@ -133,29 +141,10 @@ class UsuarioRoutes {
          */
         this.router.delete('/:id', authenticateToken, controller.delete)
 
-        this.router.post('/login', async (req, res) => {
-            const { email, password } = req.body;
-            try {
-                const usuarioRepo = require('../repositories/usuarioRepository');
-                const result = await require('../db/db').query('SELECT * FROM usuario WHERE email = $1', [email]);
-                const usuario = result.rows[0];
-                if (!usuario || usuario.password !== password) {
-                    return res.status(401).json({ message: 'Email ou senha incorretos' });
-                }
-                const token = jwt.sign(
-                    { id: usuario.id, email: usuario.email, nome: usuario.nome },
-                    JWT_SECRET,
-                    { expiresIn: '1h' }
-                );
-                return res.status(200).json({ message: 'Login realizado com sucesso', token, usuario });
-            } catch (error) {
-                console.error('Erro no login:', error);
-                return res.status(500).json({ message: 'Erro interno no login' });
-            }
-        });
+        this.router.post('/login', controller.login)
 
         this.router.post('/solicitar-otp', controller.solicitarOtp);
-        this.router.post('/verificar-otp', controller.verificarOtp);
+        this.router.post('/verificar-otp', ValidateUsuario.validateCreate, controller.verificarOtp);
     }
 
     getRouter() {

@@ -8,6 +8,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center', // centraliza verticalmente
     alignItems: 'center',     // centraliza horizontalmente
   },
+  errorContainer: {
+  backgroundColor: 'rgba(255, 0, 0, 0.2)',
+  padding: 10,
+  borderRadius: 5,
+  marginBottom: 15,
+  width: '100%',
+  },
+  errorText: {
+    color: '#ff3333',
+    textAlign: 'center',
+    fontSize: 14,
+  },
   inner: {
     width: '100%',
     maxWidth: 400,

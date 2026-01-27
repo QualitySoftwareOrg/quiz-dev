@@ -189,7 +189,7 @@ export default function QuizScreen() {
           zIndex: 10,
           backgroundColor: 'rgba(255,255,255,0.85)',
           borderRadius: 24,
-          padding: 6,
+          padding: 5,
         }}
         onPress={() => navigation.navigate('Temas')}
       >
@@ -215,11 +215,12 @@ export default function QuizScreen() {
           if (respostaSelecionada) {
             if (alt.key === alternativaCorreta) {
               borderColor = '#00FF00';
-              backgroundColor = '#f7fff7';
             }
-            if (alt.key === respostaSelecionada && alt.key !== alternativaCorreta) {
-              borderColor = '#FF3B3B';
-              backgroundColor = '#fff7f7';
+            if (alt.key === respostaSelecionada) {
+              backgroundColor = '#f0f0f0'; // branco mais escuro para o selecionado
+              if (alt.key !== alternativaCorreta) {
+                borderColor = '#FF3B3B';
+              }
             }
           }
           return (

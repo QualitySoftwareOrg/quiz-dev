@@ -15,7 +15,9 @@ const createTableUsuario = async () => {
             data_nascimento DATE NOT NULL,
             email VARCHAR(100) UNIQUE NOT NULL,
             password VARCHAR(100) NOT NULL,
-            historico_pontuacoes JSONB
+            historico_pontuacoes JSONB,
+            tentativas_login INT DEFAULT 0,
+            tempo_bloqueio TIMESTAMP NULL
             );`
 
             await db.query(createQueryUsuario);

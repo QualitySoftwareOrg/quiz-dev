@@ -1,8 +1,6 @@
 ### Listar todos os usuários
 GET http://localhost:3000/api/usuarios
 
-###
-
 ### Buscar usuário por ID
 GET http://localhost:3000/api/usuarios/1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJwYWJsb0BnbWFpbC5jb20iLCJub21lIjoiUGFibG8iLCJpYXQiOjE3NTA2MjYwMTksImV4cCI6MTc1MDYyOTYxOX0.Fx43G9oZzCLlvz1L8v_1ocsPQtsZd089-WmDAlcVoTQ
@@ -20,10 +18,13 @@ POST http://localhost:3000/api/usuarios
 Content-Type: application/json
 
 {
-    "nome": "Dudu Maconha",
+    "nome": "Dudu",
+    "sobrenome": "Maconha",
+    "data_nascimento": "2000-01-01",
     "email": "pabloangelons.06@gmail.com",
     "password": "16:20",
-    "otp": "689394"
+    "otp": "562690",
+    "historico_pontuacoes": {}
 }
 
 ###
@@ -39,8 +40,6 @@ Content-Type: application/json
     "historico_pontuacoes": []
 }
 
-###
-
 ### Deletar usuário
 DELETE http://localhost:3000/api/usuarios/3
 
@@ -53,5 +52,5 @@ Content-Type: application/json
 
 {
     "email": "pablo@gmail.com",
-    "password": "pablin123"
+    "password": "1234"
 }

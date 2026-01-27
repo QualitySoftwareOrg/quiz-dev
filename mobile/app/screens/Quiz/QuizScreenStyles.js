@@ -29,7 +29,6 @@ const styles = StyleSheet.create({
     paddingVertical: 32,
     paddingHorizontal: 18,
     marginBottom: 32,
-    height: 160,
     justifyContent: 'center',
     width: '100%',
     alignItems: 'center',
@@ -77,6 +76,8 @@ const styles = StyleSheet.create({
     color: '#6B2BAA',
     fontWeight: 'bold',
     letterSpacing: 0.5,
+    flexShrink: 1, // Permite quebra de linha
+    flexWrap: 'wrap', // Permite quebra de linha
   },
   tempoBarraContainer: {
     width: '100%',
