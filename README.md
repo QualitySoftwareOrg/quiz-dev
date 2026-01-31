@@ -61,6 +61,11 @@ Oferecer uma experiencia educativa leve e envolvente, usando perguntas de multip
 
 Veja `docs/DOCKER.md` para o passo a passo completo (Postgres, backend, mobile e PgAdmin).
 
+Antes de subir, crie o `.env` com base no modelo:
+```
+cp .env.example .env
+```
+
 Inicio rapido:
 
 ```

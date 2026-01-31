@@ -19,7 +19,7 @@ Servicos:
 
 ## Observacoes importantes (Mobile)
 - O Expo dentro do container serve o bundle, mas o dispositivo (ou emulador) precisa acessar a API.
-- O valor de `EXPO_PUBLIC_API_URL` esta em `docker-compose.yml` e deve apontar para o IP da sua maquina.
+- O valor de `EXPO_PUBLIC_API_URL` fica no `.env` e deve apontar para o IP da sua maquina.
   - Exemplo: `http://192.168.0.6:3000/api`
 - Para o QR Code apontar para o IP correto, mantenha:
   - `REACT_NATIVE_PACKAGER_HOSTNAME` = IP local da sua maquina (ex: `192.168.0.6`)
@@ -35,7 +35,7 @@ Servicos:
   - Obs: tunel pode ser mais lento.
 
 ## Variaveis de ambiente principais
-Backend (em `docker-compose.yml`):
+Backend (no `.env`):
 - `DB_HOST=db`
 - `DB_SSL=false`
 - `JWT_SECRET=troque-este-segredo`
@@ -43,16 +43,20 @@ Backend (em `docker-compose.yml`):
 - `OTP_DEBUG=false`
 - (opcional) `EMAIL_USER` e `EMAIL_PASS` para envio real de OTP
 
-Mobile:
+Mobile (no `.env`):
 - `EXPO_PUBLIC_API_URL=http://192.168.0.6:3000/api`
 - `REACT_NATIVE_PACKAGER_HOSTNAME=192.168.0.6`
 - `EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0`
 - `CI=false`
 
-PgAdmin:
+PgAdmin (no `.env`):
 - URL: `http://localhost:5050`
 - Email: `admin@quizdev.com`
 - Senha: `admin`
+
+## Arquivo .env
+- Use `.env` local para rodar o projeto.
+- Existe um `.env.example` com o modelo das variaveis.
 
 ## Dicas de desenvolvimento
 - Os servicos usam bind-mounts para refletir alteracoes em tempo real.
