@@ -49,10 +49,6 @@ export default function HomeScreen() {
           style={styles.logo}
         />
       </View>
-      {username ? (
-        <Text style={styles.username}>Ola, {username}</Text>
-      ) : null}
-      
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('Temas')}

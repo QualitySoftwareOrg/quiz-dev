@@ -593,7 +593,7 @@ Dependencias:
 ## 9) Documentacao atual
 
 - `README.md` atualizado para refletir o estado atual.
-- `docs/DOCKER.md` atualizado com Expo LAN/QR, envs e SDK 54.
+- `docs/RODAR_PROJETO.md` atualizado com Expo LAN/QR, envs e SDK 54.
 - `docs/RESUMO-QUIZDEV.md` traz resumo curto.
 
 ---
@@ -733,7 +733,7 @@ Raiz:
 
 - `docker-compose.yml`
 - `README.md`
-- `docs/DOCKER.md`
+- `docs/RODAR_PROJETO.md`
 - `docs/RESUMO-QUIZDEV.md`
 - `ANALISE_PROJETO_QUIZDEV.md`
 
