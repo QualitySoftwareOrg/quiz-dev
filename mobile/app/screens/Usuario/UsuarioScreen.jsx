@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -19,22 +19,36 @@ export default function UsuarioScreen() {
     pontuacao: 0,
   });
 
-  useEffect(() => {
-    const carregarUsuario = async () => {
+  const carregarUsuario = useCallback(() => {
+    let isActive = true;
+    const run = async () => {
       const usuarioSalvo = await AsyncStorage.getItem('usuario');
-      if (usuarioSalvo) {
+      if (usuarioSalvo && isActive) {
         const user = JSON.parse(usuarioSalvo);
+        let historico = user.historico_pontuacoes || {};
+        if (typeof historico === 'string') {
+          try {
+            historico = JSON.parse(historico);
+          } catch (e) {
+            historico = {};
+          }
+        }
         setUsuario({
           nome: user.nome || '',
           sobrenome: user.sobrenome || '',
           data_nascimento: user.data_nascimento || '',
           email: user.email || '',
-          pontuacao: user.historico_pontuacoes?.total || 0,
+          pontuacao: historico.total || 0,
         });
       }
     };
-    carregarUsuario();
+    run();
+    return () => {
+      isActive = false;
+    };
   }, []);
+
+  useFocusEffect(carregarUsuario);
 
   return (
     <LinearGradient

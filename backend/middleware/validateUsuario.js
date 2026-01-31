@@ -3,17 +3,24 @@ class ValidateUsuario {
         const { nome, sobrenome, email, password, data_nascimento} = req.body;
 
         if (!nome || !sobrenome || !email || !password || !data_nascimento) {
-            return res.status(400).json({ message: "Todos os campos são obrigatórios" });
+            return res.status(400).json({ message: "Todos os campos sÃ£o obrigatÃ³rios" });
         }
-        // Validação do formato DD/MM/AAAA e conversão para YYYY-MM-DD
+        const regex = /^[\p{L}\s]+$/u;
+        if (nome && !regex.test(nome)) {
+            return res.status(400).json({ message: "O nome deve conter apenas letras." });
+        }
+        if (sobrenome && !regex.test(sobrenome)) {
+            return res.status(400).json({ message: "O sobrenome deve conter apenas letras." });
+        }
+        // ValidaÃ§Ã£o do formato DD/MM/AAAA e conversÃ£o para YYYY-MM-DD
         if (/^\d{2}\/\d{2}\/\d{4}$/.test(data_nascimento)) {
             const [dia, mes, ano] = data_nascimento.split('/');
             req.body.data_nascimento = `${ano}-${mes}-${dia}`;
         }
 
-        // Validação do formato final
+        // ValidaÃ§Ã£o do formato final
         if (!/^\d{4}-\d{2}-\d{2}$/.test(req.body.data_nascimento)) {
-            return res.status(400).json({ message: "Data de nascimento inválida. Use o formato DD/MM/AAAA ou AAAA-MM-DD." });
+            return res.status(400).json({ message: "Data de nascimento invÃ¡lida. Use o formato DD/MM/AAAA ou AAAA-MM-DD." });
         }
         next();
     }
@@ -25,7 +32,7 @@ class ValidateUsuario {
             return res.status(400).json({ message: "Envie pelo menos um campo para atualizar" });
         }
 
-        const regex = /^[A-Za-zÀ-ÿ\s]+$/;
+        const regex = /^[\p{L}\s]+$/u;
         if (nome && !regex.test(nome)) {
             return res.status(400).json({ message: "O nome deve conter apenas letras." });
         }

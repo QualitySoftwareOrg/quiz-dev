@@ -16,7 +16,7 @@ describe("ValidateUsuario middleware", () => {
       ValidateUsuario.validateCreate(req, res, next);
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
-        message: "Todos os campos são obrigatórios",
+        message: "Todos os campos sÃ£o obrigatÃ³rios",
       });
       expect(next).not.toHaveBeenCalled();
     });
@@ -25,6 +25,7 @@ describe("ValidateUsuario middleware", () => {
       req.body = {
         nome: "Jo3n",
         sobrenome: "Silva",
+        data_nascimento: "2000-01-01",
         email: "a@b.com",
         password: "pw",
       };
@@ -40,6 +41,7 @@ describe("ValidateUsuario middleware", () => {
       req.body = {
         nome: "Joao",
         sobrenome: "Silv4",
+        data_nascimento: "2000-01-01",
         email: "a@b.com",
         password: "pw",
       };
@@ -53,8 +55,9 @@ describe("ValidateUsuario middleware", () => {
 
     test("should call next when all fields are valid", () => {
       req.body = {
-        nome: "João",
+        nome: "Joao",
         sobrenome: "Silva",
+        data_nascimento: "2000-01-01",
         email: "a@b.com",
         password: "pw",
       };

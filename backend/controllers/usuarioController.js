@@ -1,6 +1,7 @@
 
 const usuarioService = require('../services/usuarioService');
 const otpService = require('../services/otpService');
+const authService = require('../services/authService');
 
 class UsuarioController {
     async getAll(req, res) {
@@ -33,10 +34,9 @@ class UsuarioController {
         try {
             const usuario = req.body;
             const usuarios = await usuarioService.create(usuario);
-            const token = jwt.sign(
+            const token = authService.genereteToken(
                 { id: usuarios.id, email: usuarios.email, nome: usuarios.nome },
-                JWT_SECRET,
-                { expiresIn: '1h' }
+                '1h'
             );
             return res.status(201).json({message: 'Usuario criado com sucesso',token , usuario: usuarios});
         } catch (error) {
@@ -89,19 +89,19 @@ class UsuarioController {
                 if (!email) {
                     return res.status(400).json ({error: 'Email é obrigatorio'})
                 }
-                await otpService.solicitarOtp(email);
-                res.status(200).json({ message: 'OTP enviada para o seu e-mail'})
+                const response = await otpService.solicitarOtp(email);
+                res.status(200).json(response)
             } catch (error) {
-                res.status(400).json({ erro: error.message });
+                res.status(error.status || 400).json({ error: error.message });
             }
     }
     async verificarOtp(req, res) {
         try {
             const { email, otp, nome, sobrenome, data_nascimento, password } = req.body;
             const usuario = await otpService.verificarOtp(email, otp, nome, sobrenome, data_nascimento, password);
-            return res.status(201).json({ usuario })
+            return res.status(200).json({ usuario })
         } catch (error) {
-            return res.status(400).json({ erro: error.message })
+            return res.status(error.status || 400).json({ error: error.message })
         }
     }
     async login(req, res) {
@@ -115,7 +115,40 @@ class UsuarioController {
             res.status(200).json(result);
 
         } catch (error) {
-            res.status(500).json({ message: error.message || 'Erro ao efetuar login'});
+            res.status(error.status || 500).json({ message: error.message || 'Erro ao efetuar login'});
+        }
+    }
+
+    async registrarPontuacao(req, res) {
+        try {
+            const { id } = req.params;
+            const { categoria, acertos, total } = req.body;
+
+            if (!categoria || typeof acertos !== 'number' || typeof total !== 'number') {
+                return res.status(400).json({ error: 'Categoria, acertos e total sao obrigatorios' });
+            }
+
+            if (req.user && String(req.user.id) !== String(id)) {
+                return res.status(403).json({ error: 'Acesso negado' });
+            }
+
+            const usuarioAtualizado = await usuarioService.registrarPontuacao(
+                id,
+                categoria,
+                acertos,
+                total
+            );
+
+            if (!usuarioAtualizado) {
+                return res.status(404).json({ error: 'Usuario nao encontrado' });
+            }
+
+            return res.status(200).json({
+                message: 'Pontuacao registrada com sucesso',
+                usuario: usuarioAtualizado,
+            });
+        } catch (error) {
+            return res.status(error.status || 500).json({ error: error.message || 'Erro ao registrar pontuacao' });
         }
     }
 }

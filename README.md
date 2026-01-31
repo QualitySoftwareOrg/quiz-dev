@@ -1,166 +1,121 @@
-# 📱 QuizDev
+# QuizDev
 
 <p align="center">
-  <img src="https://github.com/eikefrota/quiz-dev/blob/main/images/mockup.png" alt="Logo do QuizDev" width="600"/>
+  <img src="https://github.com/eikefrota/quiz-dev/blob/main/images/mockup.png" alt="QuizDev mockup" width="600"/>
 </p>
 
-**QuizDev** é um aplicativo de quiz interativo desenvolvido em React Native com suporte do Expo e Node.js no backend. Este projeto foi criado como parte prática do curso Técnico em Desenvolvimento de Sistemas do SENAC CE, com o objetivo de unir diversão e aprendizado, por meio de quizzes sobre diversos temas.
+QuizDev e um app de quiz interativo feito em React Native (Expo) com backend em Node.js. Foi criado como projeto pratico do curso Tecnico em Desenvolvimento de Sistemas do SENAC CE, com o objetivo de unir aprendizado e diversao por meio de quizzes em varios temas.
 
 ---
 
+## Objetivo
 
-## 🎯 Objetivo
-
-O principal objetivo do QuizDev é proporcionar uma experiência educativa de forma leve e divertida, por meio de perguntas de múltipla escolha sobre temas variados como Ciências, Matemática, Geografia, História, entre outros.
-
-A proposta é que o aplicativo também possa ser utilizado como ferramenta pedagógica em escolas, contribuindo com o processo de ensino, principalmente para o público infantil, ao transformar o aprendizado em uma atividade mais envolvente e dinâmica.
-
-
-## 🚀 Funcionalidades
-
-- ✅ **Quizzes com múltiplos temas**  
-  Perguntas sobre diferentes áreas do conhecimento (Geografia, História, Ciências, etc).
-
-- ❓ **Perguntas de múltipla escolha**  
-  Cada pergunta possui 4 alternativas, sendo apenas uma correta.
-
-- ⚡ **Feedback visual imediato**  
-  O usuário recebe uma resposta visual ao selecionar a alternativa.
-
-- 🧠 **Cálculo automático da pontuação**  
-  O app calcula a pontuação conforme o número de acertos.
-
-- 📱 **Interface moderna e responsiva**  
-  Desenvolvido com React Native e estilizado para rodar suavemente em dispositivos móveis.
-
-- 🔗 **Integração com API própria**  
-  Perguntas e categorias são gerenciadas via backend Node.js com Express.
-
-- 📄 **Documentação da API com Swagger**  
-  Interface de documentação gerada automaticamente com Swagger.
+Oferecer uma experiencia educativa leve e envolvente, usando perguntas de multipla escolha sobre assuntos como Geografia, Historia, Ciencias e Matematica. O app tambem pode ser usado como ferramenta pedagogica em escolas.
 
 ---
 
-## 🖼️ Demonstrações do App
+## Funcionalidades
+
+- Quizzes com multiplos temas e categorias
+- Perguntas de multipla escolha (4 opcoes)
+- Feedback visual imediato
+- Calculo automatico de pontuacao
+- Autenticacao com JWT e cadastro via OTP
+- Documentacao da API com Swagger
+
+---
+
+## Telas do app
 
 <p align="center">
-  <img src="https://github.com/eikefrota/quiz-dev/blob/main/images/funcionalidades.png" alt="Funcionalidades do QuizDev" width="800"/>
+  <img src="https://github.com/eikefrota/quiz-dev/blob/main/images/funcionalidades.png" alt="QuizDev features" width="800"/>
 </p>
 
 <p align="center">
-  <img src="https://github.com/eikefrota/quiz-dev/blob/main/images/telas.png" alt="Fluxo de telas do QuizDev" width="800"/>
+  <img src="https://github.com/eikefrota/quiz-dev/blob/main/images/telas.png" alt="QuizDev screens" width="800"/>
 </p>
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias
 
-### Front-end (Mobile)
+### Mobile (front-end)
+- React Native
+- Expo (SDK 54)
+- React Navigation
+- Axios
 
-- [React Native](https://reactnative.dev/)
-- [JavaScript](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript)
-- [Expo](https://expo.dev/)
-- [React Navigation](https://reactnavigation.org/)
-- [Styled Components](https://styled-components.com/)
-
-### Back-end
-
-- [Node.js](https://nodejs.org/)
-- [Express](https://expressjs.com/)
-- [Sequelize](https://sequelize.org/)
-- [PostgreSQL](https://www.postgresql.org/)
-- [Swagger](https://swagger.io/)
+### Backend
+- Node.js
+- Express
+- PostgreSQL (pg)
+- Swagger (OpenAPI)
 
 ---
 
-## 📚 Possíveis Aplicações
+## Como executar
 
-- 👨‍🏫 Ferramenta de apoio em ambientes escolares  
-- 🧠 Exercícios de memorização e aprendizado rápido  
-- 🕹️ Atividade de passatempo com valor educacional  
-- 📱 App de perguntas personalizáveis para festas ou treinamentos  
+### Opcao 1: Docker (recomendado)
+Veja `docs/DOCKER.md` para o passo a passo completo (Postgres, backend, mobile e PgAdmin).
 
----
-
-## 🛠️ Em Desenvolvimento
-
-Atualmente, novas funcionalidades estão sendo planejadas, como:
-
-- 🔐 Autenticação de usuários  
-- 🧠 Modo de aprendizado adaptativo  
-- 🏆 Sistema de ranking entre jogadores  
-- 🌐 Suporte a múltiplos idiomas  
-
----
-
-## 📦 Como executar o projeto:
-
-> **OBS**: Para melhor funcionamento, é recomendado o download do aplicativo **Expo Go** (disponível para Android e iOS), pois o projeto ainda está em andamento e não foi feito o deploy completo.  
-> A branch mais atualizada no momento é a **sprint2**, então é necessário mudar para ela antes de rodar o projeto.
-
----
-
-## Para rodar o Mobile:
-
-### 1. Clone o repositório:
-```bash
-git clone https://github.com/eikefrota/quiz-dev.git
+Inicio rapido:
+```
+docker compose up --build
 ```
 
-### 2. Mude para a branch mais atualizada (sprint2):
-```bash
-git checkout sprint2
-```
+Notas:
+- Expo Go no iOS exige o SDK mais recente (o projeto esta no SDK 54).
+- O QR Code aparece no terminal do container `mobile`.
+- Para celular fisico, configure o IP da sua rede local em:
+  - `EXPO_PUBLIC_API_URL`
+  - `REACT_NATIVE_PACKAGER_HOSTNAME`
 
-### 3. Acesse a pasta do projeto mobile:
-```bash
-cd quiz-dev/mobile
-```
+### Opcao 2: Local (sem Docker)
 
-### 4. Instale as dependências:
-```bash
+Backend:
+```
+cd backend
 npm install
-```
-
-### 5. Execute o app com Expo:
-```bash
-npm start
-```
-
-## Para rodar o Back-end:
-
-### 1. Acesse a pasta do projeto back-end:
-```bash
-cd ../backend
-```
-
-### 2. Instale as dependências:
-```bash
-npm install
-```
-
-### 3. Execute o back-end:
-```bash
 npm run dev
 ```
 
-- A API será executada localmente em http://localhost:3000
-- A documentação Swagger estará disponível em: http://localhost:3000/api-docs
+Mobile:
+```
+cd mobile
+npm install
+npm start
+```
+
+Defina a baseURL da API com:
+- `EXPO_PUBLIC_API_URL` (ex: `http://192.168.0.6:3000/api`)
 
 ---
 
-## 👨‍💻 Equipe
+## OTP por email (opcional)
 
-- Eike Frota  
-- Pablo Ângelo  
-- Matheus Nunes  
-- Cauâ Sales  
-
----
+Para enviar OTP por email (ao inves do modo debug):
+- Defina `EMAIL_USER` e `EMAIL_PASS` (Gmail App Password)
+- Use `OTP_DEBUG=false`
 
 ---
 
-## 🤝 Contribuições
+## Documentacao extra
 
-Contribuições são muito bem-vindas! Fique à vontade para abrir issues ou pull requests com sugestões, melhorias ou correções.
+- `docs/DOCKER.md` (Docker e Expo Go)
+- `docs/RESUMO-QUIZDEV.md` (resumo curto)
+- `docs/ESTADO_ATUAL_PROJETO_QUIZDEV.md` (documento detalhado)
 
+---
+
+## Equipe
+
+- Eike Frota
+- Pablo Angelo
+- Matheus Nunes
+- Caua Sales
+
+---
+
+## Contribuicoes
+
+Contribuicoes sao bem-vindas. Abra issues ou pull requests com sugestoes, melhorias ou correcoes.

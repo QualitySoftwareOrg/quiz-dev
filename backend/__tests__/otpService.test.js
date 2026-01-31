@@ -1,8 +1,9 @@
 jest.mock("../repositories/otpRepository");
 jest.mock("../repositories/usuarioRepository");
+jest.mock("../services/usuarioService");
 
 const otpRepo = require("../repositories/otpRepository");
-const userRepo = require("../repositories/usuarioRepository");
+const usuarioService = require("../services/usuarioService");
 const otpService = require("../services/otpService");
 
 describe("OtpService", () => {
@@ -15,23 +16,25 @@ describe("OtpService", () => {
     });
   });
 
-  test("verificarOtp lança 404 quando usuário não existe", async () => {
-    otpRepo.findByEmail = jest
-      .fn()
-      .mockResolvedValue({ email: "a@a", otp: "1111" });
-    userRepo.getByEmail = jest.fn().mockResolvedValue(null);
-    await expect(otpService.verificarOtp("a@a", "1111")).rejects.toMatchObject({
-      status: 404,
-    });
-  });
-
-  test("verificarOtp retorna token e usuário quando ok", async () => {
+  test("verificarOtp retorna token e usuario quando ok", async () => {
     otpRepo.findByEmail = jest
       .fn()
       .mockResolvedValue({ email: "b@b", otp: "2222" });
-    userRepo.getByEmail = jest.fn().mockResolvedValue({ id: 1, email: "b@b" });
     otpRepo.deleteByEmail = jest.fn().mockResolvedValue();
-    const res = await otpService.verificarOtp("b@b", "2222");
+    usuarioService.create = jest.fn().mockResolvedValue({
+      id: 1,
+      email: "b@b",
+      nome: "B",
+    });
+
+    const res = await otpService.verificarOtp(
+      "b@b",
+      "2222",
+      "B",
+      "Teste",
+      "2000-01-01",
+      "senha"
+    );
     expect(res).toHaveProperty("token");
     expect(res).toHaveProperty("usuario");
   });

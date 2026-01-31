@@ -1,0 +1,10 @@
+node_modules
+.expo
+dist
+web-build
+.env
+.git
+.gitignore
+npm-debug.*
+yarn-debug.*
+yarn-error.*

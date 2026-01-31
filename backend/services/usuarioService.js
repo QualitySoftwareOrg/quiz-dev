@@ -5,42 +5,90 @@ const authService = require('./authService');
 const MAX_TENTATIVAS = 5;
 const TEMPO_BLOQUEIO_MINUTOS = 15;
 
+const sanitizeUsuario = (usuario) => {
+    if (!usuario) return null;
+    return {
+        id: usuario.id,
+        nome: usuario.nome,
+        sobrenome: usuario.sobrenome,
+        data_nascimento: usuario.data_nascimento,
+        email: usuario.email,
+        historico_pontuacoes: usuario.historico_pontuacoes,
+    };
+};
+
 class UsuarioService {
     async getAll() {
         const usuarios = await repository.getAll();
-        return usuarios;
+        return usuarios.map(sanitizeUsuario);
     }
 
     async getById (id) {
         const usuarios = await repository.getById(id);
-        return usuarios;
+        return sanitizeUsuario(usuarios);
     }
 
     async create (dados) {
         dados.password = await bcrypt.hash(dados.password, 10);
         const novoUsuario = await repository.create(dados);
         console.log("processando dados")
-        return novoUsuario;
+        return sanitizeUsuario(novoUsuario);
     }
 
     async update (id, dados) {
         const usuarioExistente = await repository.getById(id);
-        let novaSenha = dados.password;
+        if (!usuarioExistente) return null;
+        const dadosAtualizados = { ...dados };
+        if (!dadosAtualizados.password && dadosAtualizados.senha) {
+            dadosAtualizados.password = dadosAtualizados.senha;
+        }
+        let novaSenha = dadosAtualizados.password;
         if (novaSenha) {
             const mesmaSenha = await bcrypt.compare(novaSenha, usuarioExistente.password)
             if (mesmaSenha === true) {
                 throw { message: 'A nova senha deve ser diferente da senha atual' };
             }
-            dados.password = await bcrypt.hash(novaSenha, 10);
+            dadosAtualizados.password = await bcrypt.hash(novaSenha, 10);
         }
-        const usuarioAtualizado = await repository.update(id, dados);
-        delete dados.senha
-        return usuarioAtualizado;
+        delete dadosAtualizados.senha;
+        const usuarioAtualizado = await repository.update(id, dadosAtualizados);
+        return sanitizeUsuario(usuarioAtualizado);
     }
 
     async delete (id) {
         const usuarioDeletado = await repository.remove(id);
-        return usuarioDeletado;
+        return sanitizeUsuario(usuarioDeletado);
+    }
+
+    async registrarPontuacao(id, categoria, acertos, total) {
+        const usuario = await repository.getById(id);
+        if (!usuario) return null;
+
+        const historicoAtual = usuario.historico_pontuacoes || {};
+        const porCategoria = historicoAtual.por_categoria || {};
+
+        const dadosCategoria = porCategoria[categoria] || {
+            acertos: 0,
+            total: 0,
+            partidas: 0,
+        };
+
+        dadosCategoria.acertos += acertos;
+        dadosCategoria.total += total;
+        dadosCategoria.partidas += 1;
+        dadosCategoria.ultima_partida = new Date().toISOString();
+
+        porCategoria[categoria] = dadosCategoria;
+
+        const historicoNovo = {
+            ...historicoAtual,
+            total: (historicoAtual.total || 0) + acertos,
+            por_categoria: porCategoria,
+            ultima_partida: new Date().toISOString(),
+        };
+
+        const atualizado = await repository.updateHistoricoPontuacoes(id, historicoNovo);
+        return sanitizeUsuario(atualizado);
     }
 
     async login (email, senha) {
@@ -58,29 +106,29 @@ class UsuarioService {
         const senhaValida = await bcrypt.compare(senha, usuario.password);
         if (!senhaValida) {
             await repository.incrementarTentativas(email);
-            const tentativasAtuais = (usuario.tentativasLogin || 0) + 1;
+            const tentativasAtuais = (usuario.tentativas_login || 0) + 1;
 
-            if ((usuario.tentativas_login >= MAX_TENTATIVAS)) {
+            if (tentativasAtuais >= MAX_TENTATIVAS) {
                 await repository.bloquearUsuario(email, TEMPO_BLOQUEIO_MINUTOS);
                 throw { status: 403, message: `Usuario bloqueado por ${TEMPO_BLOQUEIO_MINUTOS} minutos devido a muitas tentativas.` };
+            }
+            throw { status: 401, message: `Email ou senha incorretos. Tentativas restantes: ${Math.max(0, MAX_TENTATIVAS - tentativasAtuais)}`};
         }
-        throw { staus: 401, message: `Email ou senha incorretos. Tentativas restantes: ${MAX_TENTATIVAS - tentativasAtuais}`};
+
+        await repository.resetarTentativas(email);
+
+        const token = authService.genereteToken({
+            id: usuario.id,
+            email: usuario.email,
+            nome: usuario.nome
+        });
+
+        return {
+            message: 'login realizado com sucesso',
+            usuario: sanitizeUsuario(usuario),
+            token
+        };
     }
-
-    await repository.resetarTentativas(email);
-
-    const token = authService.genereteToken({
-        id: usuario.id,
-        email: usuario.email,
-        nome: usuario.nome
-    });
-
-    return {
-        message: 'login realizado com sucesso',
-        usuario,
-        token
-    }
-    };
 
 
 

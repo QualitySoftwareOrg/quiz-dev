@@ -103,7 +103,7 @@ export default function QuizScreen() {
   useEffect(() => {
     if (respostaSelecionada) {
       clearInterval(timerRef.current);
-      Animated.timing(tempoAnimado).stop(); // para a animação
+      tempoAnimado.stopAnimation(); // para a animacao
       delayRef.current = setTimeout(() => {
         avancarPergunta();
       }, 1500);
@@ -258,4 +258,3 @@ export default function QuizScreen() {
     </LinearGradient>
   );
 }
-

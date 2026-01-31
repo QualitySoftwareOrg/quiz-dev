@@ -26,18 +26,21 @@ describe("usuarioService create/update/delete", () => {
 
   test("update faz hash quando senha presente e retorna usuario", async () => {
     bcrypt.hash = jest.fn().mockResolvedValue("h2");
+    bcrypt.compare = jest.fn().mockResolvedValue(false);
+    repository.getById = jest.fn().mockResolvedValue({ id: 2, password: "old" });
     repository.update = jest.fn().mockResolvedValue({ id: 2, nome: "B" });
     const res = await usuarioService.update(2, { senha: "new" });
     expect(bcrypt.hash).toHaveBeenCalledWith("new", 10);
     expect(repository.update).toHaveBeenCalledWith(
       2,
-      expect.objectContaining({ senha: "h2" })
+      expect.objectContaining({ password: "h2" })
     );
     expect(res).toHaveProperty("id", 2);
   });
 
   test("update retorna null quando usuario nao existe", async () => {
     bcrypt.hash = jest.fn();
+    repository.getById = jest.fn().mockResolvedValue(null);
     repository.update = jest.fn().mockResolvedValue(null);
     const res = await usuarioService.update(99, { nome: "X" });
     expect(res).toBeNull();

@@ -48,9 +48,13 @@ export default function CadastroScreen() {
         return;
       }
       setLoading(true);
-      await api.post('/usuarios/solicitar-otp', { email });
+      const response = await api.post('/usuarios/solicitar-otp', { email });
       setShowOtp(true);
-      Alert.alert('Verificação', 'Enviamos um código para seu e-mail.');
+      if (response.data && response.data.otp) {
+        Alert.alert('Verificação', `Código OTP (debug): ${response.data.otp}`);
+      } else {
+        Alert.alert('Verificação', 'Enviamos um código para seu e-mail.');
+      }
     } catch (error) {
       // Verifica se a resposta do backend contém o erro de email já cadastrado
       if (
@@ -79,7 +83,7 @@ export default function CadastroScreen() {
         password: senha,
         otp,
       });
-      if (response.status === 201) {
+      if (response.status >= 200 && response.status < 300) {
         Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
         navigation.reset({
           index: 0,

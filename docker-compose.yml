@@ -1,0 +1,76 @@
+services:
+  db:
+    image: postgres:16
+    container_name: quizdev-db
+    environment:
+      POSTGRES_USER: quizdev
+      POSTGRES_PASSWORD: quizdev
+      POSTGRES_DB: quizdev
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: quizdev-backend
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: quizdev
+      DB_PASSWORD: quizdev
+      DB_NAME: quizdev
+      DB_SSL: "false"
+      JWT_SECRET: "troque-este-segredo"
+      CORS_ORIGINS: ""
+      OTP_TTL_MINUTES: "10"
+      OTP_DEBUG: "false"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+  mobile:
+    build: ./mobile
+    container_name: quizdev-mobile
+    command: ["npx", "expo", "start", "--lan", "--go"]
+    environment:
+      EXPO_PUBLIC_API_URL: "http://192.168.0.6:3000/api"
+      EXPO_DEVTOOLS_LISTEN_ADDRESS: "0.0.0.0"
+      REACT_NATIVE_PACKAGER_HOSTNAME: "192.168.0.6"
+      CI: "false"
+    ports:
+      - "19000:19000"
+      - "19001:19001"
+      - "19002:19002"
+      - "8081:8081"
+    depends_on:
+      - backend
+    volumes:
+      - ./mobile:/app
+      - /app/node_modules
+    tty: true
+    stdin_open: true
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: quizdev-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@quizdev.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  db_data:
+  pgadmin_data:

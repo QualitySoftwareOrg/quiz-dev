@@ -2,6 +2,7 @@ const express = require('express');
 const controller = require('../controllers/usuarioController');
 const ValidateUsuario = require('../middleware/validateUsuario');
 const authenticateToken = require('../middleware/authMiddleware');
+const { loginLimiter, otpLimiter } = require('../middleware/rateLimiters');
 
 
 class UsuarioRoutes {
@@ -21,7 +22,7 @@ class UsuarioRoutes {
          *       200:
          *         description: Lista de usuarios
          */
-        this.router.get('/', controller.getAll);
+        this.router.get('/', authenticateToken, controller.getAll);
 
         /**
          * @swagger
@@ -141,10 +142,41 @@ class UsuarioRoutes {
          */
         this.router.delete('/:id', authenticateToken, controller.delete)
 
-        this.router.post('/login', controller.login)
+        /**
+         * @swagger
+         * /api/usuarios/{id}/pontuacao:
+         *   post:
+         *     summary: Registra pontuacao do usuario
+         *     tags: [Usuarios]
+         *     parameters:
+         *       - in: path
+         *         name: id
+         *         required: true
+         *         schema:
+         *           type: string
+         *     requestBody:
+         *       required: true
+         *       content:
+         *         application/json:
+         *           schema:
+         *             type: object
+         *             properties:
+         *               categoria:
+         *                 type: string
+         *               acertos:
+         *                 type: integer
+         *               total:
+         *                 type: integer
+         *     responses:
+         *       200:
+         *         description: Pontuacao registrada
+         */
+        this.router.post('/:id/pontuacao', authenticateToken, controller.registrarPontuacao)
 
-        this.router.post('/solicitar-otp', controller.solicitarOtp);
-        this.router.post('/verificar-otp', ValidateUsuario.validateCreate, controller.verificarOtp);
+        this.router.post('/login', loginLimiter, controller.login)
+
+        this.router.post('/solicitar-otp', otpLimiter, controller.solicitarOtp);
+        this.router.post('/verificar-otp', otpLimiter, ValidateUsuario.validateCreate, controller.verificarOtp);
     }
 
     getRouter() {

@@ -1,10 +1,38 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from '../../api/api';
 
 export default function QuizResultadoScreen({ route, navigation }) {
   const { total, acertos, categoria } = route.params;
+
+  useEffect(() => {
+    const registrarPontuacao = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        const usuarioRaw = await AsyncStorage.getItem('usuario');
+        if (!token || !usuarioRaw) return;
+        const usuario = JSON.parse(usuarioRaw);
+        if (!usuario?.id) return;
+
+        const response = await api.post(
+          `/usuarios/${usuario.id}/pontuacao`,
+          { categoria, acertos, total },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (response?.data?.usuario) {
+          await AsyncStorage.setItem('usuario', JSON.stringify(response.data.usuario));
+        }
+      } catch (error) {
+        // falha silenciosa para nao travar a tela de resultado
+      }
+    };
+
+    registrarPontuacao();
+  }, [acertos, categoria, total]);
 
   // Mensagem personalizada
   let mensagem = '';

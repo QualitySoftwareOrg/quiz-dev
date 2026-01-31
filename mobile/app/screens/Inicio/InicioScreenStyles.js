@@ -11,12 +11,6 @@ const styles = StyleSheet.create({
   logo: {
     tintColor: '#fff',
   },
-  username: {
-    fontSize: 40,
-    color: '#fff',
-    fontWeight: 'bold',
-    marginBottom: 100,
-  },
   button: {
       backgroundColor: colors.white,
       paddingVertical: 20,

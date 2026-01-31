@@ -21,7 +21,22 @@ class Server {
 
     configureMiddleware() {
         this.app.use(express.json());
-        this.app.use(cors());
+        const allowedOrigins = (process.env.CORS_ORIGINS || '')
+            .split(',')
+            .map((origin) => origin.trim())
+            .filter(Boolean);
+        const corsOptions = allowedOrigins.length
+            ? {
+                origin: (origin, callback) => {
+                    if (!origin || allowedOrigins.includes(origin)) {
+                        return callback(null, true);
+                    }
+                    return callback(new Error('Not allowed by CORS'));
+                },
+                credentials: true,
+            }
+            : undefined;
+        this.app.use(cors(corsOptions));
         this.app.use(morgan('dev'));
         this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
         }

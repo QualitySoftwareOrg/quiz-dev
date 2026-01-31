@@ -1,8 +1,7 @@
 import React from 'react';
-import { Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { Text, TouchableOpacity, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
-import { colors, fonts } from '../../constants/theme';
 import styles from './HomeScreenStyles'; // Importando os estilos
 
 export default function HomeScreen() {

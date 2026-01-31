@@ -1,6 +1,6 @@
 const express = require('express');
 const perguntasController = require('../controllers/perguntasController');
-const ErroPerguntaMiddleware = require('../middleware/validadePerguntaMiddleware');
+const authenticateToken = require('../middleware/authMiddleware');
 
 class PerguntasRoutes {
     constructor() {
@@ -91,7 +91,7 @@ class PerguntasRoutes {
          *       400:
          *         description: Erro na validação dos dados
          */
-        this.router.post('/', perguntasController.createPergunta);
+        this.router.post('/', authenticateToken, perguntasController.createPergunta);
         /**
          * @swagger
          * /api/perguntas/{id}:
@@ -132,7 +132,7 @@ class PerguntasRoutes {
          *       404:
          *         description: Pergunta não encontrada
          */
-        this.router.put('/:id', perguntasController.updatePergunta);
+        this.router.put('/:id', authenticateToken, perguntasController.updatePergunta);
         /**
          * @swagger
          * /api/perguntas/{id}:
@@ -152,7 +152,7 @@ class PerguntasRoutes {
          *       404:
          *         description: Pergunta não encontrada
          */
-        this.router.delete('/:id', perguntasController.removePergunta);
+        this.router.delete('/:id', authenticateToken, perguntasController.removePergunta);
     }
 }
 

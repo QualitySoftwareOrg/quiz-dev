@@ -57,9 +57,37 @@ const createTablePergunta = async () => {
     }
 };
 
+const createTableOtps = async () => {
+    const checkTableOtpsQuery = `SELECT to_regclass('public.otps')`;
+
+    try {
+        const result = await db.query(checkTableOtpsQuery);
+
+        if (result.rows[0].to_regclass === null) {
+            const createQueryOtps = `
+            CREATE TABLE otps (
+            email VARCHAR(100) PRIMARY KEY,
+            otp VARCHAR(10) NOT NULL,
+            criado_em TIMESTAMP DEFAULT NOW(),
+            expira_em TIMESTAMP NOT NULL
+            );`;
+
+            await db.query(createQueryOtps);
+            console.log("Tabela OTPS criada com sucesso!");
+        } else {
+            // garante coluna de expiracao caso a tabela exista sem ela
+            await db.query(`ALTER TABLE otps ADD COLUMN IF NOT EXISTS expira_em TIMESTAMP`);
+            console.log("Tabela OTPS ja existe!");
+        }
+    } catch (error) {
+        console.log("Erro ao criar a tabela OTPS!", error.message);
+    }
+};
+
 const initDb = async () => {
     await createTableUsuario();
     await createTablePergunta();
+    await createTableOtps();
 };
 
 module.exports = initDb;

@@ -59,6 +59,15 @@ class UsuarioRepository {
         return result.rows[0] ? new Usuario(result.rows[0]) : null;
     }
 
+    async updateHistoricoPontuacoes(id, historico) {
+        const historicoJson = JSON.stringify(historico);
+        const result = await db.query(
+            'UPDATE usuario SET historico_pontuacoes = $1 WHERE id = $2 RETURNING *',
+            [historicoJson, id]
+        );
+        return result.rows[0] ? new Usuario(result.rows[0]) : null;
+    }
+
     async incrementarTentativas(email) {
         await db.query(`
             UPDATE usuario 
