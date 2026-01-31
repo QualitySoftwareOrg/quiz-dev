@@ -40,12 +40,14 @@ Oferecer uma experiencia educativa leve e envolvente, usando perguntas de multip
 ## Tecnologias
 
 ### Mobile (front-end)
+
 - React Native
 - Expo (SDK 54)
 - React Navigation
 - Axios
 
 ### Backend
+
 - Node.js
 - Express
 - PostgreSQL (pg)
@@ -56,14 +58,17 @@ Oferecer uma experiencia educativa leve e envolvente, usando perguntas de multip
 ## Como executar
 
 ### Opcao 1: Docker (recomendado)
+
 Veja `docs/DOCKER.md` para o passo a passo completo (Postgres, backend, mobile e PgAdmin).
 
 Inicio rapido:
+
 ```
 docker compose up --build
 ```
 
 Notas:
+
 - Expo Go no iOS exige o SDK mais recente (o projeto esta no SDK 54).
 - O QR Code aparece no terminal do container `mobile`.
 - Para celular fisico, configure o IP da sua rede local em:
@@ -73,6 +78,7 @@ Notas:
 ### Opcao 2: Local (sem Docker)
 
 Backend:
+
 ```
 cd backend
 npm install
@@ -80,6 +86,7 @@ npm run dev
 ```
 
 Mobile:
+
 ```
 cd mobile
 npm install
@@ -87,6 +94,7 @@ npm start
 ```
 
 Defina a baseURL da API com:
+
 - `EXPO_PUBLIC_API_URL` (ex: `http://192.168.0.6:3000/api`)
 
 ---
@@ -94,6 +102,7 @@ Defina a baseURL da API com:
 ## OTP por email (opcional)
 
 Para enviar OTP por email (ao inves do modo debug):
+
 - Defina `EMAIL_USER` e `EMAIL_PASS` (Gmail App Password)
 - Use `OTP_DEBUG=false`
 
@@ -102,8 +111,7 @@ Para enviar OTP por email (ao inves do modo debug):
 ## Documentacao extra
 
 - `docs/DOCKER.md` (Docker e Expo Go)
-- `docs/RESUMO-QUIZDEV.md` (resumo curto)
-- `docs/ESTADO_ATUAL_PROJETO_QUIZDEV.md` (documento detalhado)
+- `docs/RESUMO-QUIZDEV.md` (documento detalhado)
 
 ---
 
@@ -111,8 +119,6 @@ Para enviar OTP por email (ao inves do modo debug):
 
 - Eike Frota
 - Pablo Angelo
-- Matheus Nunes
-- Caua Sales
 
 ---
 
