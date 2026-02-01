@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Alert, TouchableOpacity, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import api from '../../api/api';
 import { colors } from '../../constants/theme';
 import styles from './EditarScreenStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { formatarDataParaExibicao, formatarDataParaEnvio } from '../../utils';
+import LoadingModal from '../Loading/LoadingModal';
 
 function formatarDataNascimento(text) {
   let cleaned = text.replace(/\D/g, '');
@@ -27,17 +29,22 @@ export default function EditarScreen() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [usuarioId, setUsuarioId] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const carregarUsuario = async () => {
-      const usuarioSalvo = await AsyncStorage.getItem('usuario');
-      if (usuarioSalvo) {
-        const usuario = JSON.parse(usuarioSalvo);
-        setNome(usuario.nome || '');
-        setSobrenome(usuario.sobrenome || '');
-        setDataNascimento(formatarDataParaExibicao(usuario.data_nascimento || ''));
-        setEmail(usuario.email || '');
-        setUsuarioId(usuario.id);
+      try {
+        const usuarioSalvo = await AsyncStorage.getItem('usuario');
+        if (usuarioSalvo) {
+          const usuario = JSON.parse(usuarioSalvo);
+          setNome(usuario.nome || '');
+          setSobrenome(usuario.sobrenome || '');
+          setDataNascimento(formatarDataParaExibicao(usuario.data_nascimento || ''));
+          setEmail(usuario.email || '');
+          setUsuarioId(usuario.id);
+        }
+      } catch (error) {
+        Alert.alert('Erro', 'Não foi possível carregar os dados do usuário.');
       }
     };
     carregarUsuario();
@@ -49,6 +56,7 @@ export default function EditarScreen() {
         Alert.alert('Atenção', 'Nome, sobrenome e email são obrigatórios.');
         return;
       }
+      setLoading(true);
       const token = await AsyncStorage.getItem('token');
       if (!token) {
         Alert.alert('Erro', 'Usuário não autenticado.');
@@ -72,7 +80,6 @@ export default function EditarScreen() {
           },
         }
       );
-      // Atualiza o AsyncStorage local
       const usuarioAtualizado = {
         ...dados,
         id: usuarioId,
@@ -91,8 +98,11 @@ export default function EditarScreen() {
         }
       } else {
         Alert.alert('Erro', 'Não foi possível atualizar os dados.');
+      }
+    } finally {
+      setLoading(false);
     }
-  };}
+  };
 
   return (
     <LinearGradient
@@ -101,52 +111,104 @@ export default function EditarScreen() {
       end={{ x: 1, y: 0 }}
       style={styles.container}
     >
-      <View style={styles.inner}>
-        <Text style={styles.title}>Editar Perfil</Text>
-        <TextInput
-          placeholder="Nome"
-          value={nome}
-          onChangeText={setNome}
-          style={styles.input}
-          placeholderTextColor={colors.textLight}
-        />
-        <TextInput
-          placeholder="Sobrenome"
-          value={sobrenome}
-          onChangeText={setSobrenome}
-          style={styles.input}
-          placeholderTextColor={colors.textLight}
-        />
-        <TextInput
-          placeholder="Data de Nascimento (DD/MM/AAAA)"
-          value={dataNascimento}
-          onChangeText={text => setDataNascimento(formatarDataNascimento(text))}
-          style={styles.input}
-          placeholderTextColor={colors.textLight}
-          keyboardType="numeric"
-          maxLength={10}
-        />
-        <TextInput
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          style={styles.input}
-          placeholderTextColor={colors.textLight}
-        />
-        <TextInput
-          placeholder="Nova senha"
-          value={senha}
-          onChangeText={setSenha}
-          secureTextEntry
-          style={styles.input}
-          placeholderTextColor={colors.textLight}
-        />
-        <TouchableOpacity style={styles.button} onPress={salvar}>
-          <Text style={styles.buttonText}>Salvar</Text>
+      <LoadingModal visible={loading} />
+      
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.link} onPress={() => navigation.goBack()}>
-          <Text style={styles.linkText}>Cancelar</Text>
+        <Text style={styles.headerTitle}>Editar Perfil</Text>
+        <View style={{ width: 24 }} />
+      </View>
+
+      {/* Avatar Section */}
+      <View style={styles.avatarSection}>
+        <View style={styles.avatarContainer}>
+          <Ionicons name="person" size={40} color={colors.purple} />
+        </View>
+        <TouchableOpacity style={styles.changePhotoButton}>
+          <Text style={styles.changePhotoText}>Alterar foto</Text>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+        <View style={styles.formContainer}>
+          {/* Personal Info Section */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Informações Pessoais</Text>
+            
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Nome</Text>
+              <TextInput
+                value={nome}
+                onChangeText={setNome}
+                style={styles.input}
+                placeholderTextColor={colors.textLight}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Sobrenome</Text>
+              <TextInput
+                value={sobrenome}
+                onChangeText={setSobrenome}
+                style={styles.input}
+                placeholderTextColor={colors.textLight}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Data de Nascimento</Text>
+              <TextInput
+                value={dataNascimento}
+                onChangeText={text => setDataNascimento(formatarDataNascimento(text))}
+                style={styles.input}
+                placeholderTextColor={colors.textLight}
+                keyboardType="numeric"
+                maxLength={10}
+                placeholder="DD/MM/AAAA"
+              />
+            </View>
+          </View>
+
+          {/* Account Info Section */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Informações da Conta</Text>
+            
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Email</Text>
+              <TextInput
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                style={styles.input}
+                placeholderTextColor={colors.textLight}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Nova Senha (opcional)</Text>
+              <TextInput
+                value={senha}
+                onChangeText={setSenha}
+                secureTextEntry
+                style={styles.input}
+                placeholderTextColor={colors.textLight}
+                placeholder="Deixe em branco para manter a atual"
+              />
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+
+      {/* Bottom Actions */}
+      <View style={styles.bottomActions}>
+        <TouchableOpacity style={styles.cancelButton} onPress={() => navigation.goBack()}>
+          <Text style={styles.cancelButtonText}>Cancelar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.saveButton} onPress={salvar} disabled={loading}>
+          <Text style={styles.saveButtonText}>Salvar</Text>
         </TouchableOpacity>
       </View>
     </LinearGradient>
