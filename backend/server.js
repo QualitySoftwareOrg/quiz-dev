@@ -6,7 +6,7 @@ const usuarioRoutes = require('./routes/usuarioRoutes');
 const perguntasRoutes = require('./routes/perguntasRoutes');
 const dbInit = require('./db/dbInit');
 const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('./swagger/swaggerConfig'); // <- import Swagger config
+const swaggerSpec = require('./swagger/swaggerConfig');
 
 
 
@@ -28,7 +28,7 @@ class Server {
         const corsOptions = allowedOrigins.length
             ? {
                 origin: (origin, callback) => {
-                    if (!origin || allowedOrigins.includes(origin)) {
+                    if (!origin || allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
                         return callback(null, true);
                     }
                     return callback(new Error('Not allowed by CORS'));
