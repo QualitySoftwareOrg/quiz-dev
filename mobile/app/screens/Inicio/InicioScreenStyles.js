@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
       borderRadius: 10,
       width: '75%',
       marginTop: 20,
-      marginBottom: 10,
+      marginBottom: 40,
       alignSelf: 'center',
     },
     buttonText: {
@@ -28,12 +28,7 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
       textAlign: 'center',
     },
-    username: {
-    fontSize: 40,
-    fontWeight: 'bold',
-    color: colors.white,
-    marginBottom: 100,
-  },
+    
 });
 
 export default styles;

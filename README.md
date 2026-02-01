@@ -59,7 +59,12 @@ Oferecer uma experiencia educativa leve e envolvente, usando perguntas de multip
 
 ### Opcao 1: Docker (recomendado)
 
-Veja `docs/DOCKER.md` para o passo a passo completo (Postgres, backend, mobile e PgAdmin).
+Veja `docs/RODAR_PROJETO.md` para o passo a passo completo (Postgres, backend, mobile e PgAdmin).
+
+Antes de subir, crie o `.env` com base no modelo:
+```
+cp .env.example .env
+```
 
 Inicio rapido:
 
@@ -108,9 +113,23 @@ Para enviar OTP por email (ao inves do modo debug):
 
 ---
 
+## Seed de perguntas (opcional)
+
+Para popular o banco com 15 perguntas por tema:
+```
+docker compose exec backend node scripts/seedPerguntas.js
+```
+
+Para forcar reinsercao (limpa e insere novamente):
+```
+SEED_FORCE=true docker compose exec backend node scripts/seedPerguntas.js
+```
+
+---
+
 ## Documentacao extra
 
-- `docs/DOCKER.md` (Docker e Expo Go)
+- `docs/RODAR_PROJETO.md` (Docker e Expo Go)
 - `docs/RESUMO-QUIZDEV.md` (documento detalhado)
 
 ---
