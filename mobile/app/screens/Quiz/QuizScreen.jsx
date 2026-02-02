@@ -130,22 +130,17 @@ export default function QuizScreen() {
   if (carregando) {
     return (
       <LinearGradient colors={['#510870', '#a228b0']} style={styles.container}>
-        {/* Botão de sair */}
-        <TouchableOpacity
-          style={{
-            position: 'absolute',
-            top: 48,
-            left: 18,
-            zIndex: 10,
-            backgroundColor: 'rgba(255,255,255,0.85)',
-            borderRadius: 24,
-            padding: 6,
-          }}
-          onPress={() => navigation.navigate('Temas')}
-        >
-          <Ionicons name="arrow-back" size={28} color="#6B2BAA" />
-        </TouchableOpacity>
-        <ActivityIndicator size="large" color="#fff" />
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.botaoVoltar}
+            onPress={() => navigation.navigate('Temas')}
+          >
+            <Ionicons name="arrow-back" size={24} color="#6B2BAA" />
+          </TouchableOpacity>
+        </View>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#fff" />
+        </View>
       </LinearGradient>
     );
   }
@@ -153,24 +148,19 @@ export default function QuizScreen() {
   if (!perguntas.length) {
     return (
       <LinearGradient colors={['#510870', '#a228b0']} style={styles.container}>
-        {/* Botão de sair */}
-        <TouchableOpacity
-          style={{
-            position: 'absolute',
-            top: 48,
-            left: 18,
-            zIndex: 10,
-            backgroundColor: 'rgba(255,255,255,0.85)',
-            borderRadius: 24,
-            padding: 6,
-          }}
-          onPress={() => navigation.navigate('Temas')}
-        >
-          <Ionicons name="arrow-back" size={28} color="#6B2BAA" />
-        </TouchableOpacity>
-        <Text style={{ color: '#fff', fontSize: 20, textAlign: 'center' }}>
-          Nenhuma pergunta encontrada para este tema.
-        </Text>
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.botaoVoltar}
+            onPress={() => navigation.navigate('Temas')}
+          >
+            <Ionicons name="arrow-back" size={24} color="#6B2BAA" />
+          </TouchableOpacity>
+        </View>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ color: '#fff', fontSize: 18, textAlign: 'center', paddingHorizontal: 20 }}>
+            Nenhuma pergunta encontrada para este tema.
+          </Text>
+        </View>
       </LinearGradient>
     );
   }
@@ -180,35 +170,57 @@ export default function QuizScreen() {
 
   return (
     <LinearGradient colors={['#510870', '#a228b0']} style={styles.container}>
-      {/* Botão de sair */}
-      <TouchableOpacity
-        style={{
-          position: 'absolute',
-          top: 70,
-          left: 20,
-          zIndex: 10,
-          backgroundColor: 'rgba(255,255,255,0.85)',
-          borderRadius: 24,
-          padding: 5,
-        }}
-        onPress={() => navigation.navigate('Temas')}
-      >
-        <Ionicons name="arrow-back" size={28} color="#6B2BAA" />
-      </TouchableOpacity>
+      {/* Header compacto com botão, timer e progressão */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.botaoVoltar}
+          onPress={() => navigation.navigate('Temas')}
+        >
+          <Ionicons name="arrow-back" size={24} color="#6B2BAA" />
+        </TouchableOpacity>
+        
+        {/* Timer circular */}
+        <View style={styles.timerContainer}>
+          <View style={styles.timerCircle}>
+            <Animated.View
+              style={[
+                styles.timerProgress,
+                {
+                  transform: [{
+                    rotate: tempoAnimado.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: ['360deg', '0deg'],
+                    })
+                  }]
+                }
+              ]}
+            />
+            <Text style={styles.timerText}>{tempo}</Text>
+          </View>
+        </View>
+        
+        {/* Progressão */}
+        <View style={styles.progressaoContainer}>
+          <Text style={styles.progressaoText}>{indice + 1}/{perguntas.length}</Text>
+        </View>
+      </View>
 
-      <View style={styles.logoContainer}>
+      {/* Logo compacta */}
+      <View style={styles.logoContainerCompacto}>
         <Image
           source={require('../../assets/images/logo.png')}
-          style={styles.logo}
+          style={styles.logoCompacto}
           resizeMode="contain"
         />
       </View>
 
-      <View style={styles.cardPergunta}>
-        <Text style={styles.pergunta}>{perguntaAtual.pergunta}</Text>
+      {/* Card da pergunta otimizado */}
+      <View style={styles.cardPerguntaCompacto}>
+        <Text style={styles.perguntaCompacta}>{perguntaAtual.pergunta}</Text>
       </View>
 
-      <View style={styles.alternativasContainer}>
+      {/* Alternativas otimizadas */}
+      <View style={styles.alternativasContainerCompacto}>
         {alternativas.map((alt) => {
           let borderColor = 'transparent';
           let backgroundColor = '#fff';
@@ -217,7 +229,7 @@ export default function QuizScreen() {
               borderColor = '#00FF00';
             }
             if (alt.key === respostaSelecionada) {
-              backgroundColor = '#f0f0f0'; // branco mais escuro para o selecionado
+              backgroundColor = '#f0f0f0';
               if (alt.key !== alternativaCorreta) {
                 borderColor = '#FF3B3B';
               }
@@ -226,7 +238,7 @@ export default function QuizScreen() {
           return (
             <TouchableOpacity
               key={alt.key}
-              style={[styles.alternativa, { borderColor, backgroundColor }]}
+              style={[styles.alternativaCompacta, { borderColor, backgroundColor }]}
               activeOpacity={0.85}
               disabled={!!respostaSelecionada}
               onPress={() => {
@@ -234,26 +246,11 @@ export default function QuizScreen() {
                 if (alt.correta) setAcertos((prev) => prev + 1);
               }}
             >
-              <Text style={styles.letra}>{alt.key}</Text>
-              <Text style={styles.textoAlternativa}>{alt.texto}</Text>
+              <Text style={styles.letraCompacta}>{alt.key}</Text>
+              <Text style={styles.textoAlternativaCompacta}>{alt.texto}</Text>
             </TouchableOpacity>
           );
         })}
-      </View>
-
-      {/* Barra de tempo animada */}
-      <View style={styles.tempoBarraContainer}>
-        <Animated.View
-          style={[
-            styles.tempoBarra,
-            {
-              width: tempoAnimado.interpolate({
-                inputRange: [0, 1],
-                outputRange: ['0%', '100%'],
-              }),
-            },
-          ]}
-        />
       </View>
     </LinearGradient>
   );
