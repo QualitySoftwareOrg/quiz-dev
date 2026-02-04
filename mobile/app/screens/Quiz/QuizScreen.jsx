@@ -18,14 +18,23 @@ function embaralhar(array) {
 export default function QuizScreen() {
   const route = useRoute();
   const navigation = useNavigation();
-  const { categoria } = route.params || {};
+  const { categoria, dificuldade = 'medio' } = route.params || {};
   const [perguntas, setPerguntas] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [indice, setIndice] = useState(0);
   const [respostaSelecionada, setRespostaSelecionada] = useState(null);
   const [alternativas, setAlternativas] = useState([]);
-  const [tempo, setTempo] = useState(8);
   const [acertos, setAcertos] = useState(0);
+
+  // Configurações de dificuldade
+  const configDificuldade = {
+    facil: { nome: 'Fácil', cor: '#4CAF50', tempo: 10 },
+    medio: { nome: 'Médio', cor: '#FF9800', tempo: 8 },
+    dificil: { nome: 'Difícil', cor: '#F44336', tempo: 6 }
+  };
+  
+  const tempoBase = configDificuldade[dificuldade]?.tempo || 8;
+  const [tempo, setTempo] = useState(tempoBase);
 
   const timerRef = useRef(null);
   const delayRef = useRef(null);
@@ -69,13 +78,13 @@ export default function QuizScreen() {
       }));
       setAlternativas(alternativasComLetras);
       setRespostaSelecionada(null);
-      setTempo(8);
+      setTempo(tempoBase);
 
       // Barra animada: reset e inicia animação
       tempoAnimado.setValue(1);
       Animated.timing(tempoAnimado, {
         toValue: 0,
-        duration: 8000,
+        duration: tempoBase * 1000,
         useNativeDriver: false,
       }).start();
     }
@@ -90,7 +99,7 @@ export default function QuizScreen() {
         if (t <= 1) {
           clearInterval(timerRef.current);
           avancarPergunta();
-          return 8;
+          return tempoBase;
         }
         return t - 1;
       });
@@ -113,7 +122,7 @@ export default function QuizScreen() {
 
   function avancarPergunta() {
     setRespostaSelecionada(null);
-    setTempo(8);
+    setTempo(tempoBase);
     tempoAnimado.setValue(1);
     if (indice < perguntas.length - 1) {
       setIndice(indice + 1);
@@ -123,6 +132,7 @@ export default function QuizScreen() {
         total: perguntas.length,
         acertos,
         categoria,
+        dificuldade,
       });
     }
   }
@@ -199,9 +209,12 @@ export default function QuizScreen() {
           </View>
         </View>
         
-        {/* Progressão */}
+        {/* Progressão e Badge de Dificuldade */}
         <View style={styles.progressaoContainer}>
           <Text style={styles.progressaoText}>{indice + 1}/{perguntas.length}</Text>
+          <View style={[styles.badgeDificuldade, { backgroundColor: configDificuldade[dificuldade]?.cor }]}>
+            <Text style={styles.badgeText}>{configDificuldade[dificuldade]?.nome}</Text>
+          </View>
         </View>
       </View>
 

@@ -56,16 +56,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   
-  // Progressão
+  // Progressão e Badge
   progressaoContainer: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 15,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    alignItems: 'center',
+    gap: 8,
   },
   progressaoText: {
     color: '#fff',
     fontSize: 14,
+    fontWeight: 'bold',
+  },
+  badgeDificuldade: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  badgeText: {
+    color: '#fff',
+    fontSize: 12,
     fontWeight: 'bold',
   },
   

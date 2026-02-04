@@ -27,8 +27,17 @@ class PerguntaController {
     getPerguntasByCategoria = async (req, res, next) => {
         try {
             const categoria = req.query.categoria;
+            const dificuldade = req.query.dificuldade;
+            
             if (!categoria) return res.status(400).json({ error: 'Categoria é obrigatória' });
-            const perguntas = await this.perguntasService.getPerguntasByCategoria(categoria);   
+            
+            let perguntas;
+            if (dificuldade) {
+                perguntas = await this.perguntasService.getPerguntasByCategoriaDificuldade(categoria, dificuldade);
+            } else {
+                perguntas = await this.perguntasService.getPerguntasByCategoria(categoria);
+            }
+            
             if (perguntas.length === 0) return res.status(404).json({ error: 'Nenhuma pergunta encontrada para esta categoria' });
             res.json(perguntas);
         } catch (error) {
