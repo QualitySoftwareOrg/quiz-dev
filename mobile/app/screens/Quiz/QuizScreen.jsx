@@ -209,27 +209,23 @@ export default function QuizScreen() {
           </View>
         </View>
         
-        {/* Progressão e Badge de Dificuldade */}
+        {/* Progressão */}
         <View style={styles.progressaoContainer}>
           <Text style={styles.progressaoText}>{indice + 1}/{perguntas.length}</Text>
-          <View style={[styles.badgeDificuldade, { backgroundColor: configDificuldade[dificuldade]?.cor }]}>
-            <Text style={styles.badgeText}>{configDificuldade[dificuldade]?.nome}</Text>
-          </View>
         </View>
       </View>
 
-      {/* Logo compacta */}
-      <View style={styles.logoContainerCompacto}>
-        <Image
-          source={require('../../assets/images/logo.png')}
-          style={styles.logoCompacto}
-          resizeMode="contain"
-        />
-      </View>
-
-      {/* Card da pergunta otimizado */}
-      <View style={styles.cardPerguntaCompacto}>
-        <Text style={styles.perguntaCompacta}>{perguntaAtual.pergunta}</Text>
+      {/* Container com badge sobreposto e card da pergunta */}
+      <View style={styles.perguntaWrapper}>
+        {/* Badge de número da pergunta sobreposto */}
+        <View style={[styles.badgePergunta, { backgroundColor: configDificuldade[dificuldade]?.cor }]}>
+          <Text style={styles.badgePerguntaTexto}>Pergunta {indice + 1}/{perguntas.length}</Text>
+        </View>
+        
+        {/* Card da pergunta */}
+        <View style={styles.cardPerguntaCompacto}>
+          <Text style={styles.perguntaCompacta}>{perguntaAtual.pergunta}</Text>
+        </View>
       </View>
 
       {/* Alternativas otimizadas */}

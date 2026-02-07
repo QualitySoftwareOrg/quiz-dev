@@ -58,23 +58,44 @@ const styles = StyleSheet.create({
   
   // Progressão e Badge
   progressaoContainer: {
-    alignItems: 'center',
-    gap: 8,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 15,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
   },
   progressaoText: {
     color: '#fff',
     fontSize: 14,
     fontWeight: 'bold',
   },
-  badgeDificuldade: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+  
+  // Wrapper para badge sobreposto e card da pergunta
+  perguntaWrapper: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 40,
+    marginBottom: 28,
   },
-  badgeText: {
+  
+  // Badge sobreposto (metade dentro, metade fora)
+  badgePergunta: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 25,
+    position: 'absolute',
+    top: -20,
+    zIndex: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  badgePerguntaTexto: {
     color: '#fff',
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: 'bold',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   
   // Logo compacta
@@ -92,14 +113,14 @@ const styles = StyleSheet.create({
   cardPerguntaCompacto: {
     backgroundColor: '#fff',
     borderRadius: 16,
-    paddingVertical: 24,
+    paddingVertical: 32,
     paddingHorizontal: 18,
-    marginBottom: 28,
     width: '100%',
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
+    marginTop: 20,
   },
   perguntaCompacta: {
     color: '#6B2BAA',
