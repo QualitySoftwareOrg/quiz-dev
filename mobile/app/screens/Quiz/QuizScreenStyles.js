@@ -55,6 +55,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  timerTextUrgent: {
+    color: '#FF3B3B',
+  },
   
   // Progressão e Badge
   progressaoContainer: {
@@ -69,11 +72,77 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   
+  // Card de informações do usuário - versão compacta
+  userInfoCardCompact: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderRadius: 12,
+    padding: 10,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.15)',
+  },
+  userAvatarSmall: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+  userDetailsCompact: {
+    flex: 1,
+  },
+  userTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+    gap: 8,
+  },
+  userNickSmall: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  userLevelSmall: {
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  progressBarContainerSmall: {
+    width: '100%',
+    height: 6,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  progressBarFillSmall: {
+    height: '100%',
+    backgroundColor: '#FFD700',
+    borderRadius: 3,
+  },
+  userPointsSmall: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: 10,
+    gap: 3,
+  },
+  userPointsTextSmall: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  
   // Wrapper para badge sobreposto e card da pergunta
   perguntaWrapper: {
     width: '100%',
     alignItems: 'center',
-    marginTop: 40,
+    marginTop: 20,
     marginBottom: 28,
   },
   
@@ -96,6 +165,26 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
+  },
+  
+  // Pontos ganhos
+  pontosGanhosContainer: {
+    position: 'absolute',
+    top: -60,
+    alignSelf: 'center',
+    backgroundColor: '#FFD700',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  pontosGanhosTexto: {
+    color: '#6B2BAA',
+    fontSize: 24,
+    fontWeight: 'bold',
   },
   
   // Logo compacta
@@ -164,6 +253,59 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     flexShrink: 1,
     lineHeight: 24,
+  },
+  alternativaDesabilitada: {
+    opacity: 0.3,
+  },
+  textoDesabilitado: {
+    textDecorationLine: 'line-through',
+  },
+  
+  // Power-ups
+  powerUpsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
+    paddingHorizontal: 8,
+    gap: 12,
+  },
+  powerUpButton: {
+    flex: 1,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.3)',
+    position: 'relative',
+  },
+  powerUpDisabled: {
+    opacity: 0.4,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+  },
+  powerUpText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginTop: 4,
+  },
+  powerUpBadge: {
+    position: 'absolute',
+    top: -6,
+    right: -6,
+    backgroundColor: '#FF3B3B',
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  powerUpBadgeText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: 'bold',
   },
   
   // Estilos originais mantidos para compatibilidade

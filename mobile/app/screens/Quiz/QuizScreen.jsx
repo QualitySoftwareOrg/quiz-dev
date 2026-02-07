@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, Image, ActivityIndicator, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ActivityIndicator, Animated, Vibration } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons'; // Adicione esta linha
+import { Ionicons } from '@expo/vector-icons';
 import styles from './QuizScreenStyles';
 import api from '../../api/api';
 
@@ -26,6 +26,17 @@ export default function QuizScreen() {
   const [alternativas, setAlternativas] = useState([]);
   const [acertos, setAcertos] = useState(0);
 
+  // Dados do usuário (mock - depois pode vir de contexto/API)
+  const usuario = {
+    nick: 'Player',
+    pontos: 1250,
+    nivel: 5,
+    xpAtual: 350,
+    xpProximoNivel: 500,
+  };
+  
+  const progressoNivel = (usuario.xpAtual / usuario.xpProximoNivel) * 100;
+
   // Configurações de dificuldade
   const configDificuldade = {
     facil: { nome: 'Fácil', cor: '#4CAF50', tempo: 10 },
@@ -35,10 +46,24 @@ export default function QuizScreen() {
   
   const tempoBase = configDificuldade[dificuldade]?.tempo || 8;
   const [tempo, setTempo] = useState(tempoBase);
+  
+  // Power-ups
+  const [powerUps, setPowerUps] = useState({
+    cinquentaCinquenta: { usado: false, quantidade: 1 },
+    pular: { usado: false, quantidade: 1 },
+    tempoExtra: { usado: false, quantidade: 1 },
+  });
 
   const timerRef = useRef(null);
   const delayRef = useRef(null);
   const tempoAnimado = useRef(new Animated.Value(1)).current; // 1 = 100%
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const pontosAnim = useRef(new Animated.Value(0)).current;
+  
+  const [pontosGanhos, setPontosGanhos] = useState(null);
+  const [mostrarPontos, setMostrarPontos] = useState(false);
 
   useEffect(() => {
     async function carregarPerguntas() {
@@ -80,6 +105,22 @@ export default function QuizScreen() {
       setRespostaSelecionada(null);
       setTempo(tempoBase);
 
+      // Animação de entrada
+      fadeAnim.setValue(0);
+      slideAnim.setValue(50);
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+      ]).start();
+
       // Barra animada: reset e inicia animação
       tempoAnimado.setValue(1);
       Animated.timing(tempoAnimado, {
@@ -101,6 +142,22 @@ export default function QuizScreen() {
           avancarPergunta();
           return tempoBase;
         }
+        if (t <= 3) {
+          Animated.loop(
+            Animated.sequence([
+              Animated.timing(pulseAnim, {
+                toValue: 1.3,
+                duration: 300,
+                useNativeDriver: true,
+              }),
+              Animated.timing(pulseAnim, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: true,
+              }),
+            ])
+          ).start();
+        }
         return t - 1;
       });
     }, 1000);
@@ -112,7 +169,36 @@ export default function QuizScreen() {
   useEffect(() => {
     if (respostaSelecionada) {
       clearInterval(timerRef.current);
-      tempoAnimado.stopAnimation(); // para a animacao
+      tempoAnimado.stopAnimation();
+      
+      // Vibração ao responder
+      const alternativaSelecionada = alternativas.find(a => a.key === respostaSelecionada);
+      if (alternativaSelecionada?.correta) {
+        Vibration.vibrate(100); // Vibração curta para acerto
+        const pontos = tempo >= 5 ? 20 : 10;
+        setPontosGanhos(pontos);
+      } else {
+        Vibration.vibrate([0, 100, 100, 100]); // Vibração dupla para erro
+        setPontosGanhos(0);
+      }
+      
+      // Animação de pontos
+      setMostrarPontos(true);
+      pontosAnim.setValue(0);
+      Animated.sequence([
+        Animated.timing(pontosAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.delay(800),
+        Animated.timing(pontosAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start(() => setMostrarPontos(false));
+      
       delayRef.current = setTimeout(() => {
         avancarPergunta();
       }, 1500);
@@ -124,10 +210,12 @@ export default function QuizScreen() {
     setRespostaSelecionada(null);
     setTempo(tempoBase);
     tempoAnimado.setValue(1);
+    pulseAnim.stopAnimation();
+    pulseAnim.setValue(1);
+    setPowerUps(prev => ({ ...prev, cinquentaCinquenta: { ...prev.cinquentaCinquenta, usado: false } }));
     if (indice < perguntas.length - 1) {
       setIndice(indice + 1);
     } else {
-      // Vai para a tela de resultado
       navigation.replace('QuizResultado', {
         total: perguntas.length,
         acertos,
@@ -135,6 +223,38 @@ export default function QuizScreen() {
         dificuldade,
       });
     }
+  }
+  
+  function usar5050() {
+    if (powerUps.cinquentaCinquenta.usado || powerUps.cinquentaCinquenta.quantidade === 0 || respostaSelecionada) return;
+    const alternativasErradas = alternativas.filter(alt => !alt.correta);
+    const paraRemover = embaralhar(alternativasErradas).slice(0, 2);
+    setAlternativas(prev => prev.map(alt => ({
+      ...alt,
+      desabilitada: paraRemover.some(r => r.key === alt.key)
+    })));
+    setPowerUps(prev => ({
+      ...prev,
+      cinquentaCinquenta: { usado: true, quantidade: prev.cinquentaCinquenta.quantidade - 1 }
+    }));
+  }
+  
+  function usarPular() {
+    if (powerUps.pular.usado || powerUps.pular.quantidade === 0 || respostaSelecionada) return;
+    setPowerUps(prev => ({
+      ...prev,
+      pular: { usado: true, quantidade: prev.pular.quantidade - 1 }
+    }));
+    avancarPergunta();
+  }
+  
+  function usarTempoExtra() {
+    if (powerUps.tempoExtra.usado || powerUps.tempoExtra.quantidade === 0 || respostaSelecionada) return;
+    setTempo(prev => prev + 5);
+    setPowerUps(prev => ({
+      ...prev,
+      tempoExtra: { usado: true, quantidade: prev.tempoExtra.quantidade - 1 }
+    }));
   }
 
   if (carregando) {
@@ -191,7 +311,9 @@ export default function QuizScreen() {
         
         {/* Timer circular */}
         <View style={styles.timerContainer}>
-          <View style={styles.timerCircle}>
+          <Animated.View style={[styles.timerCircle, {
+            transform: [{ scale: tempo <= 3 ? pulseAnim : 1 }]
+          }]}>
             <Animated.View
               style={[
                 styles.timerProgress,
@@ -205,8 +327,8 @@ export default function QuizScreen() {
                 }
               ]}
             />
-            <Text style={styles.timerText}>{tempo}</Text>
-          </View>
+            <Text style={[styles.timerText, tempo <= 3 && styles.timerTextUrgent]}>{tempo}</Text>
+          </Animated.View>
         </View>
         
         {/* Progressão */}
@@ -215,8 +337,31 @@ export default function QuizScreen() {
         </View>
       </View>
 
+      {/* Card de informações do usuário - versão compacta */}
+      <View style={styles.userInfoCardCompact}>
+        <View style={styles.userAvatarSmall}>
+          <Ionicons name="person" size={16} color="#fff" />
+        </View>
+        <View style={styles.userDetailsCompact}>
+          <View style={styles.userTopRow}>
+            <Text style={styles.userNickSmall}>{usuario.nick}</Text>
+            <Text style={styles.userLevelSmall}>Lv.{usuario.nivel}</Text>
+          </View>
+          <View style={styles.progressBarContainerSmall}>
+            <View style={[styles.progressBarFillSmall, { width: `${progressoNivel}%` }]} />
+          </View>
+        </View>
+        <View style={styles.userPointsSmall}>
+          <Ionicons name="star" size={12} color="#FFD700" />
+          <Text style={styles.userPointsTextSmall}>{usuario.pontos}</Text>
+        </View>
+      </View>
+
       {/* Container com badge sobreposto e card da pergunta */}
-      <View style={styles.perguntaWrapper}>
+      <Animated.View style={[
+        styles.perguntaWrapper,
+        { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }
+      ]}>
         {/* Badge de número da pergunta sobreposto */}
         <View style={[styles.badgePergunta, { backgroundColor: configDificuldade[dificuldade]?.cor }]}>
           <Text style={styles.badgePerguntaTexto}>Pergunta {indice + 1}/{perguntas.length}</Text>
@@ -226,10 +371,35 @@ export default function QuizScreen() {
         <View style={styles.cardPerguntaCompacto}>
           <Text style={styles.perguntaCompacta}>{perguntaAtual.pergunta}</Text>
         </View>
-      </View>
+        
+        {/* Pontos ganhos */}
+        {mostrarPontos && pontosGanhos !== null && (
+          <Animated.View style={[
+            styles.pontosGanhosContainer,
+            {
+              opacity: pontosAnim,
+              transform: [{
+                translateY: pontosAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, -30]
+                })
+              }, {
+                scale: pontosAnim
+              }]
+            }
+          ]}>
+            <Text style={styles.pontosGanhosTexto}>
+              {pontosGanhos > 0 ? `+${pontosGanhos}` : '0'}
+            </Text>
+          </Animated.View>
+        )}
+      </Animated.View>
 
       {/* Alternativas otimizadas */}
-      <View style={styles.alternativasContainerCompacto}>
+      <Animated.View style={[
+        styles.alternativasContainerCompacto,
+        { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }
+      ]}>
         {alternativas.map((alt) => {
           let borderColor = 'transparent';
           let backgroundColor = '#fff';
@@ -247,19 +417,71 @@ export default function QuizScreen() {
           return (
             <TouchableOpacity
               key={alt.key}
-              style={[styles.alternativaCompacta, { borderColor, backgroundColor }]}
+              style={[
+                styles.alternativaCompacta,
+                { borderColor, backgroundColor },
+                alt.desabilitada && styles.alternativaDesabilitada
+              ]}
               activeOpacity={0.85}
-              disabled={!!respostaSelecionada}
+              disabled={!!respostaSelecionada || alt.desabilitada}
               onPress={() => {
                 setRespostaSelecionada(alt.key);
                 if (alt.correta) setAcertos((prev) => prev + 1);
               }}
             >
-              <Text style={styles.letraCompacta}>{alt.key}</Text>
-              <Text style={styles.textoAlternativaCompacta}>{alt.texto}</Text>
+              <Text style={[styles.letraCompacta, alt.desabilitada && styles.textoDesabilitado]}>{alt.key}</Text>
+              <Text style={[styles.textoAlternativaCompacta, alt.desabilitada && styles.textoDesabilitado]}>{alt.texto}</Text>
             </TouchableOpacity>
           );
         })}
+      </Animated.View>
+
+      {/* Power-ups */}
+      <View style={styles.powerUpsContainer}>
+        <TouchableOpacity
+          style={[
+            styles.powerUpButton,
+            (powerUps.cinquentaCinquenta.usado || powerUps.cinquentaCinquenta.quantidade === 0 || respostaSelecionada) && styles.powerUpDisabled
+          ]}
+          onPress={usar5050}
+          disabled={powerUps.cinquentaCinquenta.usado || powerUps.cinquentaCinquenta.quantidade === 0 || !!respostaSelecionada}
+        >
+          <Ionicons name="options" size={20} color="#fff" />
+          <Text style={styles.powerUpText}>50/50</Text>
+          <View style={styles.powerUpBadge}>
+            <Text style={styles.powerUpBadgeText}>{powerUps.cinquentaCinquenta.quantidade}</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.powerUpButton,
+            (powerUps.pular.usado || powerUps.pular.quantidade === 0 || respostaSelecionada) && styles.powerUpDisabled
+          ]}
+          onPress={usarPular}
+          disabled={powerUps.pular.usado || powerUps.pular.quantidade === 0 || !!respostaSelecionada}
+        >
+          <Ionicons name="play-forward" size={20} color="#fff" />
+          <Text style={styles.powerUpText}>Pular</Text>
+          <View style={styles.powerUpBadge}>
+            <Text style={styles.powerUpBadgeText}>{powerUps.pular.quantidade}</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.powerUpButton,
+            (powerUps.tempoExtra.usado || powerUps.tempoExtra.quantidade === 0 || respostaSelecionada) && styles.powerUpDisabled
+          ]}
+          onPress={usarTempoExtra}
+          disabled={powerUps.tempoExtra.usado || powerUps.tempoExtra.quantidade === 0 || !!respostaSelecionada}
+        >
+          <Ionicons name="time" size={20} color="#fff" />
+          <Text style={styles.powerUpText}>+5s</Text>
+          <View style={styles.powerUpBadge}>
+            <Text style={styles.powerUpBadgeText}>{powerUps.tempoExtra.quantidade}</Text>
+          </View>
+        </TouchableOpacity>
       </View>
     </LinearGradient>
   );
