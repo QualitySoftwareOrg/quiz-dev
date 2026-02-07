@@ -10,6 +10,9 @@ class PerguntasService {
     async getPerguntasByCategoria(categoria) {
         return await perguntasRepository.getByCategoria(categoria);
     }
+    async getPerguntasByCategoriaDificuldade(categoria, dificuldade) {
+        return await perguntasRepository.getByCategoriaDificuldade(categoria, dificuldade);
+    }
     async createPergunta(data) {
         return await perguntasRepository.create(data);
     }
