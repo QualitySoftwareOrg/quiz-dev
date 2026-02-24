@@ -6,7 +6,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 
 import styles from './UsuarioScreenStyles';
-import { colors } from '../../constants/theme';
 import { formatarDataParaExibicao } from '../../utils';
 
 export default function UsuarioScreen() {
@@ -29,9 +28,9 @@ export default function UsuarioScreen() {
         if (typeof historico === 'string') {
           try {
             historico = JSON.parse(historico);
-          } catch (e) {
-            historico = {};
-          }
+            } catch (_e) {
+              historico = {};
+            }
         }
         setUsuario({
           nome: user.nome || '',

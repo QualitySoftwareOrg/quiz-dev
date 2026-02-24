@@ -7,6 +7,7 @@ import { colors } from '../../constants/theme';
 import styles from './CadastroScreenStyles';
 import LoadingModal from '../Loading/LoadingModal';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function formatarDataNascimento(text) {
   let cleaned = text.replace(/\D/g, '');
@@ -43,8 +44,12 @@ export default function CadastroScreen() {
         Alert.alert('Atenção', 'O sobrenome deve conter apenas letras.');
         return;
       }
-      if (!nome || !sobrenome || !email || !senha) {
+      if (!nome || !sobrenome || !email || !senha || !dataNascimento) {
         Alert.alert('Atenção', 'Preencha todos os campos obrigatórios.');
+        return;
+      }
+      if (dataNascimento.length !== 10) {
+        Alert.alert('Atenção', 'Data de nascimento inválida. Use DD/MM/AAAA.');
         return;
       }
       setLoading(true);
@@ -56,14 +61,12 @@ export default function CadastroScreen() {
         Alert.alert('Verificação', 'Enviamos um código para seu e-mail.');
       }
     } catch (error) {
-      // Verifica se a resposta do backend contém o erro de email já cadastrado
-      if (
-        error.response &&
-        error.response.data &&
-        (error.response.data.error === 'Email já cadastrado' ||
-          error.response.data.message === 'Email já cadastrado')
-      ) {
+      const code = error.response?.data?.code;
+      const message = error.response?.data?.message;
+      if (code === 'EMAIL_IN_USE') {
         Alert.alert('Erro', 'Email inserido já está em uso');
+      } else if (message) {
+        Alert.alert('Erro', message);
       } else {
         Alert.alert('Erro', 'Não foi possível enviar o OTP.');
       }
@@ -74,6 +77,10 @@ export default function CadastroScreen() {
 
   const verificarOtp = async () => {
     try {
+      if (!otp || otp.length !== 6) {
+        Alert.alert('Atenção', 'Informe o código OTP de 6 dígitos.');
+        return;
+      }
       setLoading(true);
       const response = await api.post('/usuarios/verificar-otp', {
         nome,
@@ -84,14 +91,28 @@ export default function CadastroScreen() {
         otp,
       });
       if (response.status >= 200 && response.status < 300) {
+        const token = response.data?.token;
+        const usuario = response.data?.usuario;
+        if (token && usuario) {
+          await AsyncStorage.setItem('usuario', JSON.stringify(usuario));
+          await AsyncStorage.setItem('token', token);
+        }
         Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
         navigation.reset({
           index: 0,
-          routes: [{ name: 'Home' }],
+          routes: [{ name: 'MainTabs' }],
         });
       }
     } catch (error) {
-      Alert.alert('Erro', 'OTP inválido ou erro ao cadastrar.');
+      const code = error.response?.data?.code;
+      const message = error.response?.data?.message;
+      if (code === 'OTP_INVALID') {
+        Alert.alert('Erro', 'OTP inválido ou expirado.');
+      } else if (message) {
+        Alert.alert('Erro', message);
+      } else {
+        Alert.alert('Erro', 'Erro ao cadastrar.');
+      }
     } finally {
       setLoading(false);
     }

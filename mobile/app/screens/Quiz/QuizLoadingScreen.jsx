@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text } from 'react-native';
+import { Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export default function QuizLoadingScreen({ navigation, route }) {
@@ -13,7 +13,7 @@ export default function QuizLoadingScreen({ navigation, route }) {
     }
     const timer = setTimeout(() => setCount(count - 1), 1000);
     return () => clearTimeout(timer);
-  }, [count]);
+  }, [count, categoria, navigation]);
 
   return (
     <LinearGradient

@@ -7,6 +7,7 @@ const perguntasRoutes = require('./routes/perguntasRoutes');
 const dbInit = require('./db/dbInit');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swagger/swaggerConfig'); // <- import Swagger config
+const ErroHandle = require('./middleware/erroMiddleware');
 
 
 
@@ -49,10 +50,7 @@ class Server {
             res.send('A api usuarios está funcionando')
         });
 
-        this.app.use((err, req, res, next) => {
-            console.error(err.stack);
-            return res.status(500).json({error: 'Erro interno do servidor'})
-        });
+        this.app.use(ErroHandle.handle);
 
     
     }

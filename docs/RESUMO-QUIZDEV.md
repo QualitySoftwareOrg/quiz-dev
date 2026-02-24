@@ -54,7 +54,8 @@ Pastas principais:
 - `docs/` : Documentos auxiliares
 - `images/` : imagens do README
 - `README.md` : documentacao geral
-- `ANALISE_PROJETO_QUIZDEV.md` : analise tecnica anterior (baseline)
+- `docs/ERROS_E_MELHORIAS.md` : lista de erros/bugs e pontos de correcao
+- `docs/NOVAS_FUNCIONALIDADES_E_MELHORIAS.md` : backlog de melhorias e novas funcoes
 
 Arquivos de orquestracao:
 
@@ -735,7 +736,8 @@ Raiz:
 - `README.md`
 - `docs/RODAR_PROJETO.md`
 - `docs/RESUMO-QUIZDEV.md`
-- `ANALISE_PROJETO_QUIZDEV.md`
+- `docs/ERROS_E_MELHORIAS.md`
+- `docs/NOVAS_FUNCIONALIDADES_E_MELHORIAS.md`
 
 ---
 

@@ -345,22 +345,22 @@ const perguntas = [
 
 
   // Extras para completar 30 por tema
-  { categoria: 'Conhecimentos Gerais', pontuacao: 10, pergunta: 'Qual ? a capital da It?lia?', resposta_correta: 'Roma', respostas_incorretas: ['Mil?o', 'Veneza', 'N?poles'] },
+  { categoria: 'Conhecimentos Gerais', pontuacao: 10, pergunta: 'Qual é a capital da Itália?', resposta_correta: 'Roma', respostas_incorretas: ['Milão', 'Veneza', 'Nápoles'] },
 
-  { categoria: 'Futebol', pontuacao: 10, pergunta: 'Qual sele??o venceu a Copa do Mundo de 2010?', resposta_correta: 'Espanha', respostas_incorretas: ['Holanda', 'Alemanha', 'Brasil'] },
-  { categoria: 'Futebol', pontuacao: 10, pergunta: 'Qual sele??o venceu a Copa do Mundo de 2006?', resposta_correta: 'It?lia', respostas_incorretas: ['Fran?a', 'Alemanha', 'Brasil'] },
-  { categoria: 'Futebol', pontuacao: 10, pergunta: 'Qual ? o principal campeonato nacional do Brasil?', resposta_correta: 'Brasileir?o', respostas_incorretas: ['Copa do Brasil', 'Carioca', 'Paulista'] },
+  { categoria: 'Futebol', pontuacao: 10, pergunta: 'Qual seleção venceu a Copa do Mundo de 2010?', resposta_correta: 'Espanha', respostas_incorretas: ['Holanda', 'Alemanha', 'Brasil'] },
+  { categoria: 'Futebol', pontuacao: 10, pergunta: 'Qual seleção venceu a Copa do Mundo de 2006?', resposta_correta: 'Itália', respostas_incorretas: ['França', 'Alemanha', 'Brasil'] },
+  { categoria: 'Futebol', pontuacao: 10, pergunta: 'Qual é o principal campeonato nacional do Brasil?', resposta_correta: 'Brasileirão', respostas_incorretas: ['Copa do Brasil', 'Carioca', 'Paulista'] },
 
-  { categoria: 'Filmes', pontuacao: 10, pergunta: 'Qual filme tem o personagem Indiana Jones?', resposta_correta: 'Indiana Jones', respostas_incorretas: ['Miss?o Imposs?vel', 'Rocky', 'Rambo'] },
-  { categoria: 'Filmes', pontuacao: 10, pergunta: 'Qual filme ? sobre carros falantes da Pixar?', resposta_correta: 'Carros', respostas_incorretas: ['Avi?es', 'Toy Story', 'Up'] },
-  { categoria: 'Filmes', pontuacao: 10, pergunta: 'Qual filme apresenta o personagem Jack Skellington?', resposta_correta: 'O Estranho Mundo de Jack', respostas_incorretas: ['Coraline', 'A Noiva Cad?ver', 'Frankenweenie'] },
+  { categoria: 'Filmes', pontuacao: 10, pergunta: 'Qual filme tem o personagem Indiana Jones?', resposta_correta: 'Indiana Jones', respostas_incorretas: ['Missão Impossível', 'Rocky', 'Rambo'] },
+  { categoria: 'Filmes', pontuacao: 10, pergunta: 'Qual filme é sobre carros falantes da Pixar?', resposta_correta: 'Carros', respostas_incorretas: ['Aviões', 'Toy Story', 'Up'] },
+  { categoria: 'Filmes', pontuacao: 10, pergunta: 'Qual filme apresenta o personagem Jack Skellington?', resposta_correta: 'O Estranho Mundo de Jack', respostas_incorretas: ['Coraline', 'A Noiva Cadáver', 'Frankenweenie'] },
 
-  { categoria: 'Séries', pontuacao: 10, pergunta: 'Qual s?rie acompanha um grupo de sobreviventes em uma ilha?', resposta_correta: 'Lost', respostas_incorretas: ['The 100', 'Vikings', 'Suits'] },
-  { categoria: 'Séries', pontuacao: 10, pergunta: 'Qual s?rie tem o personagem Dexter Morgan?', resposta_correta: 'Dexter', respostas_incorretas: ['House', 'Sons of Anarchy', 'The Mentalist'] },
+  { categoria: 'Séries', pontuacao: 10, pergunta: 'Qual série acompanha um grupo de sobreviventes em uma ilha?', resposta_correta: 'Lost', respostas_incorretas: ['The 100', 'Vikings', 'Suits'] },
+  { categoria: 'Séries', pontuacao: 10, pergunta: 'Qual série tem o personagem Dexter Morgan?', resposta_correta: 'Dexter', respostas_incorretas: ['House', 'Sons of Anarchy', 'The Mentalist'] },
 
-  { categoria: 'Matemática', pontuacao: 10, pergunta: 'Quanto ? 12 + 8?', resposta_correta: '20', respostas_incorretas: ['18', '22', '21'] },
+  { categoria: 'Matemática', pontuacao: 10, pergunta: 'Quanto é 12 + 8?', resposta_correta: '20', respostas_incorretas: ['18', '22', '21'] },
 
-  { categoria: 'Ciência', pontuacao: 10, pergunta: 'Qual planeta ? famoso por seus an?is?', resposta_correta: 'Saturno', respostas_incorretas: ['J?piter', 'Urano', 'Netuno'] },
+  { categoria: 'Ciência', pontuacao: 10, pergunta: 'Qual planeta é famoso por seus anéis?', resposta_correta: 'Saturno', respostas_incorretas: ['Júpiter', 'Urano', 'Netuno'] },
 
   { categoria: 'Jogos', pontuacao: 10, pergunta: 'Qual jogo tem a personagem Samus Aran?', resposta_correta: 'Metroid', respostas_incorretas: ['Zelda', 'Halo', 'Doom'] },
 

@@ -3,6 +3,7 @@ class ErroPerguntaMiddleware extends Error {
         super(message);
         this.name = 'ErroPerguntaMiddleware';
         this.statusCode = 400; // Bad Request
+        this.code = 'VALIDATION_ERROR';
     }
 
     static validarDificuldade(req, res, next) {

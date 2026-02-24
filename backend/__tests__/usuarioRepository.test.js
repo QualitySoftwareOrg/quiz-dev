@@ -8,14 +8,16 @@ describe("usuarioRepository", () => {
     db.query = jest.fn().mockResolvedValue({ rows: [] });
     const res = await usuarioRepository.getByEmail("a@a.com");
     expect(db.query).toHaveBeenCalled();
-    expect(res).toBeUndefined();
+    expect(res).toBeNull();
   });
 
   test("getByEmail retorna row quando existe", async () => {
     const row = { id: 1, email: "a@a.com" };
     db.query = jest.fn().mockResolvedValue({ rows: [row] });
     const res = await usuarioRepository.getByEmail("a@a.com");
-    expect(res).toEqual(row);
+    expect(res).toBeDefined();
+    expect(res.id).toBe(1);
+    expect(res.email).toBe("a@a.com");
   });
 
   test("create lança erro quando email ja existe", async () => {

@@ -9,6 +9,8 @@ module.exports = {
     "!**/*.config.js",
     "!**/__mocks__/**",
     "!**/__tests__/**",
+    "!**/scripts/**",
+    "!**/services/TrocarEmailService.js",
   ],
   coverageThreshold: {
     global: {

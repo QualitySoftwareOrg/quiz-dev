@@ -16,6 +16,7 @@ describe("ValidateUsuario middleware", () => {
       ValidateUsuario.validateCreate(req, res, next);
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
+        code: "VALIDATION_ERROR",
         message: "Todos os campos sÃ£o obrigatÃ³rios",
       });
       expect(next).not.toHaveBeenCalled();
@@ -32,6 +33,7 @@ describe("ValidateUsuario middleware", () => {
       ValidateUsuario.validateCreate(req, res, next);
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
+        code: "VALIDATION_ERROR",
         message: "O nome deve conter apenas letras.",
       });
       expect(next).not.toHaveBeenCalled();
@@ -48,6 +50,7 @@ describe("ValidateUsuario middleware", () => {
       ValidateUsuario.validateCreate(req, res, next);
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
+        code: "VALIDATION_ERROR",
         message: "O sobrenome deve conter apenas letras.",
       });
       expect(next).not.toHaveBeenCalled();
@@ -73,6 +76,7 @@ describe("ValidateUsuario middleware", () => {
       ValidateUsuario.validateUpdate(req, res, next);
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
+        code: "VALIDATION_ERROR",
         message: "Envie pelo menos um campo para atualizar",
       });
       expect(next).not.toHaveBeenCalled();
@@ -83,6 +87,7 @@ describe("ValidateUsuario middleware", () => {
       ValidateUsuario.validateUpdate(req, res, next);
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
+        code: "VALIDATION_ERROR",
         message: "O nome deve conter apenas letras.",
       });
       expect(next).not.toHaveBeenCalled();
@@ -93,6 +98,7 @@ describe("ValidateUsuario middleware", () => {
       ValidateUsuario.validateUpdate(req, res, next);
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
+        code: "VALIDATION_ERROR",
         message: "O sobrenome deve conter apenas letras.",
       });
       expect(next).not.toHaveBeenCalled();
@@ -103,6 +109,24 @@ describe("ValidateUsuario middleware", () => {
       ValidateUsuario.validateUpdate(req, res, next);
       expect(next).toHaveBeenCalled();
       expect(res.status).not.toHaveBeenCalled();
+    });
+
+    test("should return 400 when data_nascimento is invalid", () => {
+      req.body = { data_nascimento: "31/13/2020" };
+      ValidateUsuario.validateUpdate(req, res, next);
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({
+        code: "VALIDATION_ERROR",
+        message: "Data de nascimento invÃ¡lida. Use o formato DD/MM/AAAA ou AAAA-MM-DD.",
+      });
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    test("should convert data_nascimento and call next when valid", () => {
+      req.body = { data_nascimento: "10/12/2000" };
+      ValidateUsuario.validateUpdate(req, res, next);
+      expect(req.body.data_nascimento).toBe("2000-12-10");
+      expect(next).toHaveBeenCalled();
     });
   });
 });

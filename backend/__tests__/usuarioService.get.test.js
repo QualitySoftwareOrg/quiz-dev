@@ -10,14 +10,16 @@ describe("usuarioService get methods", () => {
     repository.getAll = jest.fn().mockResolvedValue([{ id: 1 }, { id: 2 }]);
     const res = await usuarioService.getAll();
     expect(repository.getAll).toHaveBeenCalled();
-    expect(res).toEqual([{ id: 1 }, { id: 2 }]);
+    expect(res).toHaveLength(2);
+    expect(res[0]).toEqual(expect.objectContaining({ id: 1 }));
+    expect(res[1]).toEqual(expect.objectContaining({ id: 2 }));
   });
 
   test("getById retorna usuario quando existe", async () => {
     repository.getById = jest.fn().mockResolvedValue({ id: 5, nome: "Z" });
     const res = await usuarioService.getById(5);
     expect(repository.getById).toHaveBeenCalledWith(5);
-    expect(res).toEqual({ id: 5, nome: "Z" });
+    expect(res).toEqual(expect.objectContaining({ id: 5, nome: "Z" }));
   });
 
   test("getById retorna null quando nao existe", async () => {

@@ -26,7 +26,7 @@ export default function QuizResultadoScreen({ route, navigation }) {
         if (response?.data?.usuario) {
           await AsyncStorage.setItem('usuario', JSON.stringify(response.data.usuario));
         }
-      } catch (error) {
+      } catch (_error) {
         // falha silenciosa para nao travar a tela de resultado
       }
     };
