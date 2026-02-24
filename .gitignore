@@ -16,6 +16,7 @@ dist/
 
 # Test/coverage
 coverage/
+backend/coverage/
 
 # OS
 .DS_Store
