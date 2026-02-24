@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">46.66% </span>
+                <span class="strong">40.54% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>14/30</span>
+                <span class='fraction'>15/37</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">14.28% </span>
+                <span class="strong">18.18% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>2/14</span>
+                <span class='fraction'>4/22</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">46.66% </span>
+                <span class="strong">40.54% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>14/30</span>
+                <span class='fraction'>15/37</span>
             </div>
         
             
@@ -131,11 +131,19 @@
 <a name='L66'></a><a href='#L66'>66</a>
 <a name='L67'></a><a href='#L67'>67</a>
 <a name='L68'></a><a href='#L68'>68</a>
-<a name='L69'></a><a href='#L69'>69</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">6x</span>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -148,15 +156,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -164,6 +171,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -186,6 +199,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -204,6 +218,7 @@ const OtpRepository = require('../repositories/otpRepository');
 const UsuarioRepository = require('../repositories/usuarioRepository');
 const AuthService = require('./authService');
 const UsuarioService = require('./usuarioService');
+const { createError } = require('../utils/errorResponse');
 &nbsp;
 class OtpService {
 <span class="fstat-no" title="function not covered" >    as</span>ync solicitarOtp(email) {
@@ -212,10 +227,7 @@ class OtpService {
         // Verifica se o usuario existe
         const usuarioExistente = <span class="cstat-no" title="statement not covered" >await UsuarioRepository.getByEmail(email);</span>
 <span class="cstat-no" title="statement not covered" >        if (usuarioExistente) {</span>
-<span class="cstat-no" title="statement not covered" >            throw {</span>
-                status: 409,
-                message: 'Usuario ja cadastrado. Faca login ou recupere sua senha.'
-            };
+<span class="cstat-no" title="statement not covered" >            throw createError(409, 'EMAIL_IN_USE', 'Usuario ja cadastrado. Faca login ou recupere sua senha.');</span>
         }
 &nbsp;
         // Gera codigo OTP (6 digitos)
@@ -223,6 +235,8 @@ class OtpService {
         const ttlMinutesRaw = <span class="cstat-no" title="statement not covered" >parseInt(process.env.OTP_TTL_MINUTES || '10', 10);</span>
         const ttlMinutes = <span class="cstat-no" title="statement not covered" >Number.isFinite(ttlMinutesRaw) &amp;&amp; ttlMinutesRaw &gt; 0 ? ttlMinutesRaw : 10;</span>
         const debugOtp = <span class="cstat-no" title="statement not covered" >process.env.OTP_DEBUG === 'true';</span>
+        const emailUser = <span class="cstat-no" title="statement not covered" >process.env.EMAIL_USER;</span>
+        const emailPass = <span class="cstat-no" title="statement not covered" >process.env.EMAIL_PASS;</span>
 <span class="cstat-no" title="statement not covered" >        if (debugOtp) {</span>
 <span class="cstat-no" title="statement not covered" >            console.log('Codigo OTP gerado:', otpCode);</span>
         }
@@ -230,8 +244,14 @@ class OtpService {
         // Salva OTP no banco com expiracao
 <span class="cstat-no" title="statement not covered" >        await OtpRepository.createOrUpdate(email, otpCode, ttlMinutes);</span>
 &nbsp;
-        // Envio de email
-<span class="cstat-no" title="statement not covered" >        await sendOtpEmail(email, otpCode);</span>
+        // Envio de email (pula no modo debug ou quando credenciais nao estao configuradas)
+<span class="cstat-no" title="statement not covered" >        if (debugOtp) {</span>
+<span class="cstat-no" title="statement not covered" >            console.log('OTP_DEBUG ativo: envio de email foi ignorado.');</span>
+        } else <span class="cstat-no" title="statement not covered" >if (!emailUser || !emailPass) {</span>
+<span class="cstat-no" title="statement not covered" >            throw createError(500, 'EMAIL_NOT_CONFIGURED', 'Email nao configurado no servidor');</span>
+        } else {
+<span class="cstat-no" title="statement not covered" >            await sendOtpEmail(email, otpCode);</span>
+        }
 &nbsp;
         const response = <span class="cstat-no" title="statement not covered" >{</span>
             success: true,
@@ -246,7 +266,7 @@ class OtpService {
     async verificarOtp(email, otp, nome, sobrenome, data_nascimento, password) {
         const otpValido = await OtpRepository.findByEmail(email, otp);
         if (!otpValido) {
-            throw { status: 401, message: 'OTP invalido ou expirado' };
+            throw createError(401, 'OTP_INVALID', 'OTP invalido ou expirado');
         }
 &nbsp;
         const dados = { nome, sobrenome, data_nascimento, email, password };
@@ -256,6 +276,7 @@ class OtpService {
         const token = AuthService.genereteToken({
             id: novoUsuario.id,
             email: novoUsuario.email,
+            role: novoUsuario.role || 'user',
             authMethod: 'otp'
         }, '30m');
 &nbsp;
@@ -274,7 +295,7 @@ module.exports = new OtpService();
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-31T04:20:57.446Z
+                at 2026-02-24T04:16:31.285Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

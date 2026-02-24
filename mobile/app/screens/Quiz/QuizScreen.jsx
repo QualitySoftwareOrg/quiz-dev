@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { View, Text, TouchableOpacity, Image, ActivityIndicator, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -24,12 +24,29 @@ export default function QuizScreen() {
   const [indice, setIndice] = useState(0);
   const [respostaSelecionada, setRespostaSelecionada] = useState(null);
   const [alternativas, setAlternativas] = useState([]);
-  const [tempo, setTempo] = useState(8);
+  const [, setTempo] = useState(8);
   const [acertos, setAcertos] = useState(0);
 
   const timerRef = useRef(null);
   const delayRef = useRef(null);
   const tempoAnimado = useRef(new Animated.Value(1)).current; // 1 = 100%
+  const totalPerguntas = perguntas.length;
+
+  const avancarPergunta = useCallback(() => {
+    setRespostaSelecionada(null);
+    setTempo(8);
+    tempoAnimado.setValue(1);
+    if (indice < totalPerguntas - 1) {
+      setIndice(indice + 1);
+    } else {
+      // Vai para a tela de resultado
+      navigation.replace('QuizResultado', {
+        total: totalPerguntas,
+        acertos,
+        categoria,
+      });
+    }
+  }, [acertos, categoria, indice, navigation, tempoAnimado, totalPerguntas]);
 
   useEffect(() => {
     async function carregarPerguntas() {
@@ -42,7 +59,7 @@ export default function QuizScreen() {
         const selecionadas = embaralhadas.slice(0, 10);
         setPerguntas(selecionadas);
         setIndice(0);
-      } catch (e) {
+      } catch (_e) {
         setPerguntas([]);
       }
       setCarregando(false);
@@ -79,11 +96,11 @@ export default function QuizScreen() {
         useNativeDriver: false,
       }).start();
     }
-  }, [perguntas, indice]);
+  }, [perguntas, indice, tempoAnimado]);
 
   // Timer de 8 segundos
   useEffect(() => {
-    if (respostaSelecionada || perguntas.length === 0) return;
+    if (respostaSelecionada || totalPerguntas === 0) return;
 
     timerRef.current = setInterval(() => {
       setTempo((t) => {
@@ -97,7 +114,7 @@ export default function QuizScreen() {
     }, 1000);
 
     return () => clearInterval(timerRef.current);
-  }, [respostaSelecionada, perguntas, indice]);
+  }, [respostaSelecionada, indice, totalPerguntas, avancarPergunta]);
 
   // Delay de 1,5 segundos após resposta
   useEffect(() => {
@@ -109,23 +126,7 @@ export default function QuizScreen() {
       }, 1500);
     }
     return () => clearTimeout(delayRef.current);
-  }, [respostaSelecionada]);
-
-  function avancarPergunta() {
-    setRespostaSelecionada(null);
-    setTempo(8);
-    tempoAnimado.setValue(1);
-    if (indice < perguntas.length - 1) {
-      setIndice(indice + 1);
-    } else {
-      // Vai para a tela de resultado
-      navigation.replace('QuizResultado', {
-        total: perguntas.length,
-        acertos,
-        categoria,
-      });
-    }
-  }
+  }, [respostaSelecionada, avancarPergunta, tempoAnimado]);
 
   if (carregando) {
     return (

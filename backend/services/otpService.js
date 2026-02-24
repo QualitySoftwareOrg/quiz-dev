@@ -3,6 +3,7 @@ const OtpRepository = require('../repositories/otpRepository');
 const UsuarioRepository = require('../repositories/usuarioRepository');
 const AuthService = require('./authService');
 const UsuarioService = require('./usuarioService');
+const { createError } = require('../utils/errorResponse');
 
 class OtpService {
     async solicitarOtp(email) {
@@ -11,10 +12,7 @@ class OtpService {
         // Verifica se o usuario existe
         const usuarioExistente = await UsuarioRepository.getByEmail(email);
         if (usuarioExistente) {
-            throw {
-                status: 409,
-                message: 'Usuario ja cadastrado. Faca login ou recupere sua senha.'
-            };
+            throw createError(409, 'EMAIL_IN_USE', 'Usuario ja cadastrado. Faca login ou recupere sua senha.');
         }
 
         // Gera codigo OTP (6 digitos)
@@ -35,7 +33,7 @@ class OtpService {
         if (debugOtp) {
             console.log('OTP_DEBUG ativo: envio de email foi ignorado.');
         } else if (!emailUser || !emailPass) {
-            throw { status: 500, message: 'Email nao configurado no servidor' };
+            throw createError(500, 'EMAIL_NOT_CONFIGURED', 'Email nao configurado no servidor');
         } else {
             await sendOtpEmail(email, otpCode);
         }
@@ -53,7 +51,7 @@ class OtpService {
     async verificarOtp(email, otp, nome, sobrenome, data_nascimento, password) {
         const otpValido = await OtpRepository.findByEmail(email, otp);
         if (!otpValido) {
-            throw { status: 401, message: 'OTP invalido ou expirado' };
+            throw createError(401, 'OTP_INVALID', 'OTP invalido ou expirado');
         }
 
         const dados = { nome, sobrenome, data_nascimento, email, password };
@@ -63,6 +61,7 @@ class OtpService {
         const token = AuthService.genereteToken({
             id: novoUsuario.id,
             email: novoUsuario.email,
+            role: novoUsuario.role || 'user',
             authMethod: 'otp'
         }, '30m');
 

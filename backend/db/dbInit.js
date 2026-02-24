@@ -14,6 +14,7 @@ const createTableUsuario = async () => {
             sobrenome VARCHAR(100) NOT NULL,
             data_nascimento DATE NOT NULL,
             email VARCHAR(100) UNIQUE NOT NULL,
+            role VARCHAR(20) DEFAULT 'user' NOT NULL,
             password VARCHAR(100) NOT NULL,
             historico_pontuacoes JSONB,
             tentativas_login INT DEFAULT 0,
@@ -25,6 +26,10 @@ const createTableUsuario = async () => {
         } else {
             console.log("Tabela Usuário já existe!")
         };
+        await db.query(`ALTER TABLE usuario ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'user'`);
+        await db.query(`UPDATE usuario SET role = 'user' WHERE role IS NULL`);
+        await db.query(`ALTER TABLE usuario ALTER COLUMN role SET DEFAULT 'user'`);
+        await db.query(`ALTER TABLE usuario ALTER COLUMN role SET NOT NULL`);
     } catch (error){
         console.log("Erro ao criar a tebela Usuário!", error.message);
     }

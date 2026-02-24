@@ -8,8 +8,9 @@ describe("usuarioService.login", () => {
 
   test("lança 401 quando usuario inexistente", async () => {
     repository.getByEmail = jest.fn().mockResolvedValue(null);
-    await expect(usuarioService.login("a@a.com", "p")).rejects.toEqual({
+    await expect(usuarioService.login("a@a.com", "p")).rejects.toMatchObject({
       status: 401,
+      code: "INVALID_CREDENTIALS",
       message: "Email ou senha incorretos",
     });
   });
@@ -26,6 +27,7 @@ describe("usuarioService.login", () => {
       });
     await expect(usuarioService.login("a@a.com", "p")).rejects.toMatchObject({
       status: 403,
+      code: "ACCOUNT_BLOCKED",
     });
   });
 
@@ -41,7 +43,7 @@ describe("usuarioService.login", () => {
     repository.incrementarTentativas = jest.fn().mockResolvedValue();
     await expect(
       usuarioService.login("a@a.com", "wrong")
-    ).rejects.toMatchObject({ status: 401 });
+    ).rejects.toMatchObject({ status: 401, code: "INVALID_CREDENTIALS" });
     expect(repository.incrementarTentativas).toHaveBeenCalledWith("a@a.com");
   });
 
@@ -58,7 +60,7 @@ describe("usuarioService.login", () => {
     repository.bloquearUsuario = jest.fn().mockResolvedValue();
     await expect(
       usuarioService.login("a@a.com", "wrong")
-    ).rejects.toMatchObject({ status: 403 });
+    ).rejects.toMatchObject({ status: 403, code: "ACCOUNT_BLOCKED" });
     expect(repository.bloquearUsuario).toHaveBeenCalledWith(
       "a@a.com",
       expect.any(Number)
@@ -78,6 +80,7 @@ describe("usuarioService.login", () => {
       id: 1,
       email: "a@a.com",
       nome: "A",
+      role: "user",
     });
     expect(result).toMatchObject({ token: "tok" });
   });

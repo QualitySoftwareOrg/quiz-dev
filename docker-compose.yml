@@ -35,9 +35,11 @@ services:
   mobile:
     build: ./mobile
     container_name: quizdev-mobile
-    command: ["npx", "expo", "start", "--lan", "--go"]
+    command: ["sh", "-c", "npm install && npx expo start --lan --go"]
     env_file:
       - .env
+    environment:
+      REACT_NATIVE_PACKAGER_HOSTNAME: 192.168.15.110
     ports:
       - "19000:19000"
       - "19001:19001"

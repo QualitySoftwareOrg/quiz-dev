@@ -1,19 +1,32 @@
 const repository = require('../repositories/usuarioRepository');
 const bcrypt = require('bcrypt');
 const authService = require('./authService');
+const { createError } = require('../utils/errorResponse');
 
 const MAX_TENTATIVAS = 5;
 const TEMPO_BLOQUEIO_MINUTOS = 15;
 
 const sanitizeUsuario = (usuario) => {
     if (!usuario) return null;
+    let historico = usuario.historico_pontuacoes;
+    if (typeof historico === 'string') {
+        try {
+            historico = JSON.parse(historico);
+        } catch (error) {
+            historico = {};
+        }
+    }
+    if (!historico) {
+        historico = {};
+    }
     return {
         id: usuario.id,
         nome: usuario.nome,
         sobrenome: usuario.sobrenome,
         data_nascimento: usuario.data_nascimento,
         email: usuario.email,
-        historico_pontuacoes: usuario.historico_pontuacoes,
+        role: usuario.role || 'user',
+        historico_pontuacoes: historico,
     };
 };
 
@@ -46,7 +59,7 @@ class UsuarioService {
         if (novaSenha) {
             const mesmaSenha = await bcrypt.compare(novaSenha, usuarioExistente.password)
             if (mesmaSenha === true) {
-                throw { message: 'A nova senha deve ser diferente da senha atual' };
+                throw createError(422, 'PASSWORD_REUSE', 'A nova senha deve ser diferente da senha atual');
             }
             dadosAtualizados.password = await bcrypt.hash(novaSenha, 10);
         }
@@ -95,12 +108,14 @@ class UsuarioService {
         const usuario = await repository.getByEmail(email);
 
         if (!usuario) {
-            throw { status: 401, message: 'Email ou senha incorretos' };
+            throw createError(401, 'INVALID_CREDENTIALS', 'Email ou senha incorretos');
         }
 
         if (usuario.tempo_bloqueio && new Date(usuario.tempo_bloqueio) > new Date()) {
             const minutosRestantes = Math.ceil((new Date(usuario.tempo_bloqueio) - new Date()) / 60000);
-            throw { status: 403, message: `Usuario bloqueado. Tente novamente em ${minutosRestantes} minutos.` }
+            throw createError(403, 'ACCOUNT_BLOCKED', `Usuario bloqueado. Tente novamente em ${minutosRestantes} minutos.`, {
+                retry_after_minutes: minutosRestantes,
+            });
         }
 
         const senhaValida = await bcrypt.compare(senha, usuario.password);
@@ -110,9 +125,11 @@ class UsuarioService {
 
             if (tentativasAtuais >= MAX_TENTATIVAS) {
                 await repository.bloquearUsuario(email, TEMPO_BLOQUEIO_MINUTOS);
-                throw { status: 403, message: `Usuario bloqueado por ${TEMPO_BLOQUEIO_MINUTOS} minutos devido a muitas tentativas.` };
+                throw createError(403, 'ACCOUNT_BLOCKED', `Usuario bloqueado por ${TEMPO_BLOQUEIO_MINUTOS} minutos devido a muitas tentativas.`, {
+                    retry_after_minutes: TEMPO_BLOQUEIO_MINUTOS,
+                });
             }
-            throw { status: 401, message: `Email ou senha incorretos. Tentativas restantes: ${Math.max(0, MAX_TENTATIVAS - tentativasAtuais)}`};
+            throw createError(401, 'INVALID_CREDENTIALS', `Email ou senha incorretos. Tentativas restantes: ${Math.max(0, MAX_TENTATIVAS - tentativasAtuais)}`);
         }
 
         await repository.resetarTentativas(email);
@@ -120,7 +137,8 @@ class UsuarioService {
         const token = authService.genereteToken({
             id: usuario.id,
             email: usuario.email,
-            nome: usuario.nome
+            nome: usuario.nome,
+            role: usuario.role || 'user',
         });
 
         return {

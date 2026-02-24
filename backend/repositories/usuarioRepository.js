@@ -14,7 +14,7 @@ class UsuarioRepository {
 
     async getByEmail(email) {
         const result = await db.query('SELECT * FROM usuario WHERE email = $1', [email]);
-        return result.rows[0]
+        return result.rows[0] ? new Usuario(result.rows[0]) : null;
     }
     async create( dados ) {
         let { nome, sobrenome, data_nascimento, email, password, historico_pontuacoes} = dados;

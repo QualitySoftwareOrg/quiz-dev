@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -8,18 +8,6 @@ import styles from './InicioScreenStyles';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
-  const [username, setUsername] = useState('');
-
-  useEffect(() => {
-    const carregarUsuario = async () => {
-      const usuarioSalvo = await AsyncStorage.getItem('usuario');
-      if (usuarioSalvo) {
-        const usuario = JSON.parse(usuarioSalvo);
-        setUsername(usuario.nome);
-      }
-    };
-    carregarUsuario();
-  }, []);
 
   const logout = async () => {
     await AsyncStorage.removeItem('usuario');

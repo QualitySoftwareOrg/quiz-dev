@@ -35,14 +35,18 @@ export default function LoginScreen() {
       }
     } catch (error) {
       if (error.response) {
-        if (error.response.status === 403) {
-          setErrorMessage(error.response.data.message || 'Usuário bloqueado temporariamente');
+        const code = error.response.data?.code;
+        const message = error.response.data?.message;
+        if (code === 'ACCOUNT_BLOCKED') {
+          setErrorMessage(message || 'Usuário bloqueado temporariamente');
+        } else if (code === 'INVALID_CREDENTIALS') {
+          setErrorMessage(message || 'Email ou senha incorretos.');
         } else {
-          setErrorMessage(error.response.data.message || 'Email ou senha incorretos.');
-      }
-        } else {
-          setErrorMessage('Erro ao conectar ao servidor');
+          setErrorMessage(message || 'Erro ao efetuar login.');
         }
+      } else {
+        setErrorMessage('Erro ao conectar ao servidor');
+      }
     } finally {
       setLoading(false);
     }

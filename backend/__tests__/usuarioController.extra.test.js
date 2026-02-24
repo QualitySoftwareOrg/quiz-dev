@@ -15,12 +15,16 @@ describe("UsuarioController extra tests", () => {
     expect(res.json).toHaveBeenCalledWith([{ id: 1 }]);
   });
 
-  test("getAll trata erro e retorna 404", async () => {
+  test("getAll trata erro e retorna 500 com code", async () => {
     usuarioService.getAll = jest.fn().mockRejectedValue(new Error("fail"));
     const req = {};
     const res = { status: jest.fn(() => res), json: jest.fn() };
     await usuarioController.getAll(req, res);
-    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Erro ao buscar usuarios",
+    });
   });
 
   test("getById retorna 200 quando encontrado", async () => {
@@ -38,9 +42,13 @@ describe("UsuarioController extra tests", () => {
     const res = { status: jest.fn(() => res), json: jest.fn() };
     await usuarioController.getById(req, res);
     expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({
+      code: "USER_NOT_FOUND",
+      message: "Usuario não encontrado",
+    });
   });
 
-  test("create retorna 400 quando email ja cadastrado", async () => {
+  test("create retorna 409 quando email ja cadastrado", async () => {
     // simulate service throwing Error('Email já cadastrado')
     usuarioService.create = jest
       .fn()
@@ -51,9 +59,10 @@ describe("UsuarioController extra tests", () => {
     const req = { body: { nome: "A", email: "a@a.com", password: "p" } };
     const res = { status: jest.fn(() => res), json: jest.fn() };
     await usuarioController.create(req, res);
-    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.status).toHaveBeenCalledWith(409);
     expect(res.json).toHaveBeenCalledWith({
-      error: "Email j\u00e1 cadastrado",
+      code: "EMAIL_IN_USE",
+      message: "Email j\u00e1 cadastrado",
     });
   });
 
@@ -63,6 +72,10 @@ describe("UsuarioController extra tests", () => {
     const res = { status: jest.fn(() => res), json: jest.fn() };
     await usuarioController.create(req, res);
     expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      code: "USER_CREATE_FAILED",
+      message: "Erro ao criar usuario",
+    });
   });
 
   test("delete retorna 404 quando nao encontrado", async () => {
@@ -71,6 +84,10 @@ describe("UsuarioController extra tests", () => {
     const res = { status: jest.fn(() => res), json: jest.fn() };
     await usuarioController.delete(req, res);
     expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({
+      code: "USER_NOT_FOUND",
+      message: "Usuario não encontrado para a remoção.",
+    });
   });
 
   test("delete retorna 200 quando removido", async () => {
@@ -87,6 +104,10 @@ describe("UsuarioController extra tests", () => {
     const res = { status: jest.fn(() => res), json: jest.fn() };
     await usuarioController.delete(req, res);
     expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      code: "USER_DELETE_FAILED",
+      message: "Erro ao remover usuario",
+    });
   });
 
   test("solicitarOtp exige email e responde 400 quando otpservice falha", async () => {
@@ -96,6 +117,10 @@ describe("UsuarioController extra tests", () => {
     const res = { status: jest.fn(() => res), json: jest.fn() };
     await usuarioController.solicitarOtp(req, res);
     expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      code: "OTP_REQUEST_FAILED",
+      message: "Erro ao solicitar OTP",
+    });
   });
 
   test("solicitarOtp sucesso retorna 200", async () => {
@@ -111,6 +136,10 @@ describe("UsuarioController extra tests", () => {
     const res = { status: jest.fn(() => res), json: jest.fn() };
     await usuarioController.login(req, res);
     expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      code: "VALIDATION_ERROR",
+      message: "Email e password são obrigatorios",
+    });
   });
 
   test("login retorna 200 quando sucesso", async () => {
@@ -125,12 +154,12 @@ describe("UsuarioController extra tests", () => {
   test("login propaga erro vindo do service", async () => {
     usuarioService.login = jest
       .fn()
-      .mockRejectedValue({ status: 401, message: "err" });
+      .mockRejectedValue({ status: 401, code: "INVALID_CREDENTIALS", message: "err" });
     const req = { body: { email: "a@a.com", password: "p" } };
     const res = { status: jest.fn(() => res), json: jest.fn() };
     await usuarioController.login(req, res);
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ message: "err" });
+    expect(res.json).toHaveBeenCalledWith({ code: "INVALID_CREDENTIALS", message: "err" });
   });
 
   test("login trata erro generico e retorna 500", async () => {
@@ -139,15 +168,22 @@ describe("UsuarioController extra tests", () => {
     const res = { status: jest.fn(() => res), json: jest.fn() };
     await usuarioController.login(req, res);
     expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      code: "LOGIN_FAILED",
+      message: "Erro ao efetuar login",
+    });
   });
 
-  test("getById trata erro generico e retorna 404", async () => {
+  test("getById trata erro generico e retorna 500", async () => {
     usuarioService.getById = jest.fn().mockRejectedValue(new Error("boom"));
     const req = { params: { id: 5 } };
     const res = { status: jest.fn(() => res), json: jest.fn() };
     await usuarioController.getById(req, res);
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({ error: "Erro ao buscar usuario " });
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Erro ao buscar usuario",
+    });
   });
 
   test("update retorna 200 quando atualizado", async () => {
@@ -169,6 +205,10 @@ describe("UsuarioController extra tests", () => {
     const res = { status: jest.fn(() => res), json: jest.fn() };
     await usuarioController.update(req, res);
     expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      code: "USER_UPDATE_FAILED",
+      message: "Erro ao atualizar usuario",
+    });
   });
 
   test("verificarOtp trata erro e retorna 400", async () => {
@@ -177,7 +217,10 @@ describe("UsuarioController extra tests", () => {
     const res = { status: jest.fn(() => res), json: jest.fn() };
     await usuarioController.verificarOtp(req, res);
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ error: "nope" });
+    expect(res.json).toHaveBeenCalledWith({
+      code: "OTP_VERIFY_FAILED",
+      message: "Erro ao verificar OTP",
+    });
   });
 
   test("login trata erro sem mensagem e retorna 500 com mensagem padrao", async () => {
@@ -187,6 +230,9 @@ describe("UsuarioController extra tests", () => {
     const res = { status: jest.fn(() => res), json: jest.fn() };
     await usuarioController.login(req, res);
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ message: "Erro ao efetuar login" });
+    expect(res.json).toHaveBeenCalledWith({
+      code: "LOGIN_FAILED",
+      message: "Erro ao efetuar login",
+    });
   });
 });

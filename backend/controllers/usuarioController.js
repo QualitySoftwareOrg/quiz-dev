@@ -2,6 +2,12 @@
 const usuarioService = require('../services/usuarioService');
 const otpService = require('../services/otpService');
 const authService = require('../services/authService');
+const { sendError, normalizeError } = require('../utils/errorResponse');
+
+const handleError = (res, error, fallback) => {
+    const { status, code, message, details } = normalizeError(error, fallback);
+    return sendError(res, status, code, message, details);
+};
 
 class UsuarioController {
     async getAll(req, res) {
@@ -10,7 +16,11 @@ class UsuarioController {
             res.status(200).json(usuarios);
         } catch (error) {
             console.error('Erro ao buscar usuarios', error);
-            res.status(404).json({error: 'Erro ao buscar usuario '});
+            return handleError(res, error, {
+                status: 500,
+                code: 'INTERNAL_SERVER_ERROR',
+                message: 'Erro ao buscar usuarios',
+            });
         }
     }
 
@@ -20,13 +30,17 @@ class UsuarioController {
             const usuarios = await usuarioService.getById(id);
             
             if (!usuarios) {
-                return res.status(404).json({ error: 'Usuario não encontrado' });
+                return sendError(res, 404, 'USER_NOT_FOUND', 'Usuario não encontrado');
             }
 
             res.status(200).json(usuarios);
         } catch (error) {
             console.error('Erro ao buscar usuario', error);
-            res.status(404).json({ error: 'Erro ao buscar usuario '});
+            return handleError(res, error, {
+                status: 500,
+                code: 'INTERNAL_SERVER_ERROR',
+                message: 'Erro ao buscar usuario',
+            });
         }
     }
 
@@ -35,16 +49,20 @@ class UsuarioController {
             const usuario = req.body;
             const usuarios = await usuarioService.create(usuario);
             const token = authService.genereteToken(
-                { id: usuarios.id, email: usuarios.email, nome: usuarios.nome },
+                { id: usuarios.id, email: usuarios.email, nome: usuarios.nome, role: usuarios.role || 'user' },
                 '1h'
             );
             return res.status(201).json({message: 'Usuario criado com sucesso',token , usuario: usuarios});
         } catch (error) {
             if (error.message === 'Email já cadastrado') {
-                return res.status(400).json({error: 'Email já cadastrado'});
+                return sendError(res, 409, 'EMAIL_IN_USE', 'Email já cadastrado');
             }
             console.error('Erro ao criar usuario', error);
-            return res.status(400).json({error: 'Erro ao criar usuario'});
+            return handleError(res, error, {
+                status: 400,
+                code: 'USER_CREATE_FAILED',
+                message: 'Erro ao criar usuario',
+            });
         }
     }
 
@@ -54,16 +72,20 @@ class UsuarioController {
             const usuario  = req.body;
             const usuarioAtualizado = await usuarioService.update(id, usuario);
             if (!usuarioAtualizado) {
-                return res.status(404).json({ error: 'Usuario não encontrado' });
+                return sendError(res, 404, 'USER_NOT_FOUND', 'Usuario não encontrado');
             }
             return res.status(200).json({message: 'Usuario atualizado com sucesso', usuario: usuarioAtualizado })
         } catch (error) {
             console.error('Erro ao atualizar usuario', error);
 
-            if (error.message === 'A nova senha deve ser diferente da senha atual') {
-                return res.status(422).json({ error: error.message});
+            if (error.code === 'PASSWORD_REUSE') {
+                return sendError(res, 422, 'PASSWORD_REUSE', error.message);
             }
-            return res.status(400).json({error: 'Erro ao atualizar usuario'});
+            return handleError(res, error, {
+                status: 400,
+                code: 'USER_UPDATE_FAILED',
+                message: 'Erro ao atualizar usuario',
+            });
         }
     }
 
@@ -73,13 +95,17 @@ class UsuarioController {
             const usuarioDeletado = await usuarioService.delete(id);
 
             if (!usuarioDeletado) {
-                return res.status(404).json({message: 'Usuario não encontrado para a remoção.'})
+                return sendError(res, 404, 'USER_NOT_FOUND', 'Usuario não encontrado para a remoção.');
             } 
 
             return res.status(200).json({ message: 'Usuario deletado com sucesso', usuario: usuarioDeletado });
         } catch (error) {
             console.error('Erro ao removerusuario: ', error);
-            return res.status(400).json({error: 'Erro ao remover usuario'});
+            return handleError(res, error, {
+                status: 400,
+                code: 'USER_DELETE_FAILED',
+                message: 'Erro ao remover usuario',
+            });
         }
     }
 
@@ -87,21 +113,29 @@ class UsuarioController {
         try {
             const { email } = req.body;                
                 if (!email) {
-                    return res.status(400).json ({error: 'Email é obrigatorio'})
+                    return sendError(res, 400, 'VALIDATION_ERROR', 'Email é obrigatorio');
                 }
                 const response = await otpService.solicitarOtp(email);
                 res.status(200).json(response)
             } catch (error) {
-                res.status(error.status || 400).json({ error: error.message });
+                return handleError(res, error, {
+                    status: 400,
+                    code: 'OTP_REQUEST_FAILED',
+                    message: 'Erro ao solicitar OTP',
+                });
             }
     }
     async verificarOtp(req, res) {
         try {
             const { email, otp, nome, sobrenome, data_nascimento, password } = req.body;
-            const usuario = await otpService.verificarOtp(email, otp, nome, sobrenome, data_nascimento, password);
-            return res.status(200).json({ usuario })
+            const result = await otpService.verificarOtp(email, otp, nome, sobrenome, data_nascimento, password);
+            return res.status(200).json(result)
         } catch (error) {
-            return res.status(error.status || 400).json({ error: error.message })
+            return handleError(res, error, {
+                status: 400,
+                code: 'OTP_VERIFY_FAILED',
+                message: 'Erro ao verificar OTP',
+            });
         }
     }
     async login(req, res) {
@@ -109,13 +143,17 @@ class UsuarioController {
             const { email, password } = req.body;
 
             if (!email || !password) {
-                return res.status(400).json({message: 'Email e password são obrigatorios'});
+                return sendError(res, 400, 'VALIDATION_ERROR', 'Email e password são obrigatorios');
             }
             const result = await usuarioService.login( email, password );
             res.status(200).json(result);
 
         } catch (error) {
-            res.status(error.status || 500).json({ message: error.message || 'Erro ao efetuar login'});
+            return handleError(res, error, {
+                status: 500,
+                code: 'LOGIN_FAILED',
+                message: 'Erro ao efetuar login',
+            });
         }
     }
 
@@ -125,11 +163,11 @@ class UsuarioController {
             const { categoria, acertos, total } = req.body;
 
             if (!categoria || typeof acertos !== 'number' || typeof total !== 'number') {
-                return res.status(400).json({ error: 'Categoria, acertos e total sao obrigatorios' });
+                return sendError(res, 400, 'VALIDATION_ERROR', 'Categoria, acertos e total sao obrigatorios');
             }
 
             if (req.user && String(req.user.id) !== String(id)) {
-                return res.status(403).json({ error: 'Acesso negado' });
+                return sendError(res, 403, 'FORBIDDEN', 'Acesso negado');
             }
 
             const usuarioAtualizado = await usuarioService.registrarPontuacao(
@@ -140,7 +178,7 @@ class UsuarioController {
             );
 
             if (!usuarioAtualizado) {
-                return res.status(404).json({ error: 'Usuario nao encontrado' });
+                return sendError(res, 404, 'USER_NOT_FOUND', 'Usuario nao encontrado');
             }
 
             return res.status(200).json({
@@ -148,7 +186,11 @@ class UsuarioController {
                 usuario: usuarioAtualizado,
             });
         } catch (error) {
-            return res.status(error.status || 500).json({ error: error.message || 'Erro ao registrar pontuacao' });
+            return handleError(res, error, {
+                status: 500,
+                code: 'SCORE_REGISTER_FAILED',
+                message: 'Erro ao registrar pontuacao',
+            });
         }
     }
 }

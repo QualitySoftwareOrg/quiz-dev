@@ -2,6 +2,7 @@ const express = require('express');
 const controller = require('../controllers/usuarioController');
 const ValidateUsuario = require('../middleware/validateUsuario');
 const authenticateToken = require('../middleware/authMiddleware');
+const { requireAdmin, requireSelfOrAdmin } = require('../middleware/authorization');
 const { loginLimiter, otpLimiter } = require('../middleware/rateLimiters');
 
 
@@ -22,7 +23,7 @@ class UsuarioRoutes {
          *       200:
          *         description: Lista de usuarios
          */
-        this.router.get('/', authenticateToken, controller.getAll);
+        this.router.get('/', authenticateToken, requireAdmin, controller.getAll);
 
         /**
          * @swagger
@@ -43,7 +44,7 @@ class UsuarioRoutes {
          *       404: 
          *         description: Usuario não encontrado
          */
-        this.router.get('/:id', authenticateToken, controller.getById);
+        this.router.get('/:id', authenticateToken, requireSelfOrAdmin, controller.getById);
 
         /**
          * @swagger
@@ -120,7 +121,7 @@ class UsuarioRoutes {
          *       404:
          *         description: usuario não encontrado
          */
-        this.router.put('/:id', authenticateToken, ValidateUsuario.validateUpdate, controller.update)
+        this.router.put('/:id', authenticateToken, requireSelfOrAdmin, ValidateUsuario.validateUpdate, controller.update)
 
         /**
          * @swagger
@@ -140,7 +141,7 @@ class UsuarioRoutes {
          *       404:
          *         description: Usuario não encontrado
          */
-        this.router.delete('/:id', authenticateToken, controller.delete)
+        this.router.delete('/:id', authenticateToken, requireSelfOrAdmin, controller.delete)
 
         /**
          * @swagger
@@ -171,7 +172,7 @@ class UsuarioRoutes {
          *       200:
          *         description: Pontuacao registrada
          */
-        this.router.post('/:id/pontuacao', authenticateToken, controller.registrarPontuacao)
+        this.router.post('/:id/pontuacao', authenticateToken, requireSelfOrAdmin, controller.registrarPontuacao)
 
         this.router.post('/login', loginLimiter, controller.login)
 
