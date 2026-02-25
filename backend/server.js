@@ -29,7 +29,7 @@ class Server {
         const corsOptions = allowedOrigins.length
             ? {
                 origin: (origin, callback) => {
-                    if (!origin || allowedOrigins.includes(origin)) {
+                    if (!origin || allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
                         return callback(null, true);
                     }
                     return callback(new Error('Not allowed by CORS'));

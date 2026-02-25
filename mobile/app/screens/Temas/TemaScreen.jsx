@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import styles from './TemaScreenStyles';
+import DificuldadeModal from '../../components/DificuldadeModal';
 
 const temas = [
   { nome: 'Conhecimentos Gerais', emoji: '🌍', tela: 'QuizGerais' },
@@ -21,6 +22,8 @@ const temas = [
 
 export default function TemaScreen() {
   const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [temaSelecionado, setTemaSelecionado] = useState(null);
 
   return (
     <LinearGradient
@@ -46,7 +49,10 @@ export default function TemaScreen() {
               key={tema.nome}
               style={styles.temaCard}
               activeOpacity={0.85}
-              onPress={() => navigation.navigate('QuizLoading', { categoria: tema.nome })}
+              onPress={() => {
+                setTemaSelecionado(tema.nome);
+                setModalVisible(true);
+              }}
             >
               <View style={styles.emojiCircle}>
                 <Text style={styles.emoji}>{tema.emoji}</Text>
@@ -57,6 +63,19 @@ export default function TemaScreen() {
           ))}
         </View>
       </ScrollView>
+      
+      <DificuldadeModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        categoria={temaSelecionado}
+        onSelect={(dificuldade) => {
+          setModalVisible(false);
+          navigation.navigate('QuizLoading', { 
+            categoria: temaSelecionado, 
+            dificuldade: dificuldade 
+          });
+        }}
+      />
     </LinearGradient>
   );
 }

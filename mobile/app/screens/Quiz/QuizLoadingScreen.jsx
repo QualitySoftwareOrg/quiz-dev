@@ -3,12 +3,12 @@ import { Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export default function QuizLoadingScreen({ navigation, route }) {
-  const { categoria } = route.params;
+  const { categoria, dificuldade } = route.params;
   const [count, setCount] = useState(3);
 
   useEffect(() => {
     if (count === 0) {
-      navigation.replace('Quiz', { categoria });
+      navigation.replace('Quiz', { categoria, dificuldade });
       return;
     }
     const timer = setTimeout(() => setCount(count - 1), 1000);

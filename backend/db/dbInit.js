@@ -46,6 +46,7 @@ const createTablePergunta = async () => {
             CREATE TABLE pergunta (
             id SERIAL PRIMARY KEY NOT NULL,
             categoria TEXT NOT NULL,
+            dificuldade TEXT NOT NULL CHECK (dificuldade IN ('facil', 'medio', 'dificil')),
             pontuacao INTEGER NOT NULL,
             pergunta TEXT NOT NULL,
             resposta_correta TEXT NOT NULL,

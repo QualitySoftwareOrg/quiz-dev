@@ -6,7 +6,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../api/api';
 
 export default function QuizResultadoScreen({ route, navigation }) {
-  const { total, acertos, categoria } = route.params;
+  const { total, acertos, categoria, dificuldade = 'medio' } = route.params;
+
+  // Configurações de dificuldade
+  const configDificuldade = {
+    facil: { nome: 'Fácil', cor: '#4CAF50' },
+    medio: { nome: 'Médio', cor: '#FF9800' },
+    dificil: { nome: 'Difícil', cor: '#F44336' }
+  };
 
   useEffect(() => {
     const registrarPontuacao = async () => {
@@ -80,11 +87,27 @@ export default function QuizResultadoScreen({ route, navigation }) {
         <Text style={{
           fontSize: 20,
           color: '#8e24aa',
-          marginBottom: 24,
+          marginBottom: 8,
           textAlign: 'center'
         }}>
           Tema: <Text style={{ fontWeight: 'bold' }}>{categoria}</Text>
         </Text>
+        <View style={{
+          backgroundColor: configDificuldade[dificuldade]?.cor,
+          paddingHorizontal: 12,
+          paddingVertical: 6,
+          borderRadius: 12,
+          marginBottom: 24,
+          alignSelf: 'center'
+        }}>
+          <Text style={{
+            color: '#fff',
+            fontSize: 14,
+            fontWeight: 'bold',
+          }}>
+            {configDificuldade[dificuldade]?.nome}
+          </Text>
+        </View>
         <View style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -116,7 +139,7 @@ export default function QuizResultadoScreen({ route, navigation }) {
             width: '100%',
             alignItems: 'center',
           }}
-          onPress={() => navigation.replace('QuizLoading', { categoria })}
+          onPress={() => navigation.replace('QuizLoading', { categoria, dificuldade })}
         >
           <Text style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>Tentar novamente</Text>
         </TouchableOpacity>

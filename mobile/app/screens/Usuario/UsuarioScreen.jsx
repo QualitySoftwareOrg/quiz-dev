@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 
 import styles from './UsuarioScreenStyles';
+import { colors } from '../../constants/theme';
 import { formatarDataParaExibicao } from '../../utils';
 
 export default function UsuarioScreen() {
@@ -28,9 +29,9 @@ export default function UsuarioScreen() {
         if (typeof historico === 'string') {
           try {
             historico = JSON.parse(historico);
-            } catch (_e) {
-              historico = {};
-            }
+          } catch (_e) {
+            historico = {};
+          }
         }
         setUsuario({
           nome: user.nome || '',
@@ -57,43 +58,75 @@ export default function UsuarioScreen() {
       style={styles.container}
     >
       <View style={styles.inner}>
-        <View
-          style={{
-            backgroundColor: '#fff',
-            borderRadius: 67,
-            padding: 0,
-            alignSelf: 'center',
-            marginBottom: 24,
-          }}
-        >
-          <Ionicons
-            name="person-circle"
-            size={134}
-            color="#510870"
-          />
+        <View style={styles.userIdentify}>
+          <View style={styles.userHeaderLeft}>
+            <Text style={styles.title}>{usuario.nome} {usuario.sobrenome}</Text>
+
+            <View style={styles.ratingBadge}>
+              <Ionicons name="star" size={14} color={colors.white} style={{ marginRight: 8 }} />
+              <Text style={styles.ratingText}>{(usuario.pontuacao || 0).toFixed(2)}</Text>
+            </View>
+          </View>
+
+          <View style={styles.avatarCircle}>
+            <Ionicons name="person" size={40} color={colors.purple} />
+          </View>
         </View>
-        <Text style={styles.title}>{usuario.nome} {usuario.sobrenome}</Text>
-        <View style={{ width: '100%', marginBottom: 18 }}>
-          <Text style={styles.infoLabel}>Nome:</Text>
-          <Text style={styles.infoValue}>{usuario.nome}</Text>
+
+        <View style={styles.quickActions}>
+          <TouchableOpacity style={styles.quickButton}>
+            <Ionicons name="cog-outline" size={20} color={colors.white} />
+            <Text style={styles.quickButtonLabel}>Ajustes</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.quickButton}>
+            <Ionicons name="sparkles-outline" size={20} color={colors.white} />
+            <Text style={styles.quickButtonLabel}>Premium</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.quickButton}>
+            <Ionicons name="list-outline" size={20} color={colors.white} />
+            <Text style={styles.quickButtonLabel}>Partidas</Text>
+          </TouchableOpacity>
+          
         </View>
-        <View style={{ width: '100%', marginBottom: 18 }}>
-          <Text style={styles.infoLabel}>Sobrenome:</Text>
-          <Text style={styles.infoValue}>{usuario.sobrenome}</Text>
-        </View>
-        <View style={{ width: '100%', marginBottom: 18 }}>
-          <Text style={styles.infoLabel}>Data de Nascimento:</Text>
-          <Text style={styles.infoValue}>
-            {formatarDataParaExibicao(usuario.data_nascimento) || 'Não informado'}
-          </Text>
-        </View>
-        <View style={{ width: '100%', marginBottom: 18 }}>
-          <Text style={styles.infoLabel}>Email:</Text>
-          <Text style={styles.infoValue}>{usuario.email}</Text>
-        </View>
-        <View style={{ width: '100%', marginBottom: 32 }}>
-          <Text style={styles.infoLabel}>Pontuação:</Text>
-          <Text style={styles.infoValue}>{usuario.pontuacao}</Text>
+
+        <TouchableOpacity style={styles.privacyCard}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.privacyTitle}>Políticas de Privacidade</Text>
+            <Text style={styles.privacyText}>
+              Levamos sua privacidade a sério. 
+              Toque aqui para ver como cuidamos dos seus dados.
+            </Text>
+          </View>
+          <Ionicons name="document-text-outline" size={38} color={colors.white} />
+        </TouchableOpacity>
+
+        <View style={styles.profileCard}>
+          <View style={styles.profileRow}>
+            <Text style={styles.profileLabel}>Nome</Text>
+            <Text style={styles.profileValue}>{usuario.nome}</Text>
+          </View>
+
+          <View style={styles.profileRow}>
+            <Text style={styles.profileLabel}>Sobrenome</Text>
+            <Text style={styles.profileValue}>{usuario.sobrenome}</Text>
+          </View>
+
+          <View style={styles.profileRow}>
+            <Text style={styles.profileLabel}>Data de Nascimento</Text>
+            <Text style={styles.profileValue}>{formatarDataParaExibicao(usuario.data_nascimento) || 'Não informado'}</Text>
+          </View>
+
+          <View style={styles.profileRow}>
+            <Text style={styles.profileLabel}>Email</Text>
+            <Text style={styles.profileValue}>{usuario.email}</Text>
+          </View>
+
+          <View style={styles.profileRow}>
+            <Text style={styles.profileLabel}>Pontuação</Text>
+            <Text style={styles.profileValue}>{usuario.pontuacao}</Text>
+          </View>
         </View>
         <TouchableOpacity
           style={styles.button}
